@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary_dark">#888888</color>
+    <color name="colorPrimaryDark_dark">#859523</color>
+    <color name="colorAccent_dark">#390023</color>
+    <color name="line_color_dark">#1AFFFFFF</color>
+    <color name="main_background_dark">#000000</color>
+
+    <color name="main_text_color_dark">#e6ffffff</color><!--文本强调的颜色-->
+    <color name="sub_text_color_dark">#99ffffff</color><!--文本提示顔色-->
+    <color name="sub_text_color2_dark">#66ffffff</color><!--文本提示顔色2-->
+    <color name="sub_text_color3_dark">#33ffffff</color><!--文本提示顔色3-->
+
+    <color name="item_background2_dark">#00ffff</color><!--item的背景顔色-->
+    <color name="card_color_dark">#ff00ff</color><!--item的背景顔色-->
+</resources>

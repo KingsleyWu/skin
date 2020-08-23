@@ -1,0 +1,61 @@
+import com.kingsley.plugin.*
+plugins {
+    // 这个 id 就是在 versionPlugin 文件夹下 build.gradle 文件内定义的id
+    id "com.kingsley.plugin"
+}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion BuildConfig.compileSdkVersion
+    buildToolsVersion BuildConfig.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion BuildConfig.minSdkVersion
+        targetSdkVersion BuildConfig.targetSdkVersion
+        versionCode BuildConfig.versionCode
+        versionName BuildConfig.versionName
+        applicationId 'com.kingsely.simple'
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            res.srcDirs = ['src/main/res', 'src/main/res-dark']
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation Kt.stdlibJdk7
+    implementation AndroidX.appcompat
+    implementation AndroidX.coreKtx
+    implementation AndroidX.constraint
+    implementation AndroidX.cardview
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation project(path: ':base')
+    implementation project(path: ':skin')
+    // skin-support 基础控件支持
+    implementation "skin.support:skin-support:${Versions.skin}"
+// skin-support 基础控件支持
+    implementation "skin.support:skin-support-appcompat:${Versions.skin}"
+// material design 控件支持[可选]
+    implementation "skin.support:skin-support-design:${Versions.skin}"
+// ConstraintLayout 控件支持[可选]
+    implementation "skin.support:skin-support-constraint-layout:${Versions.skin}"
+// CardView 控件支持[可选]
+    implementation "skin.support:skin-support-cardview:${Versions.skin}"
+}
