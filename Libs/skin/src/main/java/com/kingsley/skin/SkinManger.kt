@@ -111,6 +111,8 @@ object SkinManager {
     }
 
     private fun applyPathSkin(){
+        // 加载资源的resource，有皮肤从皮肤中记载，没有默认的资源包加载
+        skinResourcesProxy = SkinResourcesProxy(mApplication.resources)
         val skinPath = currentSkinPath()
         Log.d(TAG, "applyInitSkin skinPath:$skinPath")
         if (!skinPath.isNullOrEmpty()) {
@@ -119,6 +121,8 @@ object SkinManager {
     }
 
     private fun applyNameSkin(){
+        mSkinSuffixResources = SkinSuffixResources(mApplication.resources)
+        mSkinSuffixResources.mSkinPkgName = mApplication.packageName
         val skinName = currentSkinName()
         Log.d(TAG, "applyInitSkin skinName:$skinName")
         if (!skinName.isNullOrEmpty()) {
@@ -171,10 +175,6 @@ object SkinManager {
         val mSkinInflaterFactory = SkinInflaterFactory()
 
         init {
-            Log.d(
-                TAG,
-                "ActivitySkinChange activity factory :${activity.layoutInflater.factory} factory2 : ${activity.layoutInflater.factory2}"
-            )
             mSkinInflaterFactory.mInflater = activity.layoutInflater
             if (activity is AppCompatActivity) {
                 mSkinInflaterFactory.mAppCompatFactory = activity.layoutInflater.factory2
@@ -188,10 +188,7 @@ object SkinManager {
                 // 给ActivityLayoutInflater设置一个Factory来拦截所有的View创建
                 activity.layoutInflater.factory = mSkinInflaterFactory
             }
-            Log.d(
-                TAG,
-                "ActivitySkinChange activity factory :${activity.layoutInflater.factory} factory2 : ${activity.layoutInflater.factory2}"
-            )
+            activity.isImmersive
         }
 
         fun setLayoutInflaterFactory(original: LayoutInflater) {

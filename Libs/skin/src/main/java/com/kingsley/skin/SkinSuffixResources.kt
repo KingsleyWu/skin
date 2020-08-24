@@ -1,11 +1,13 @@
 package com.kingsley.skin
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.Log
 import android.util.TypedValue
 import androidx.annotation.AnyRes
 
@@ -73,6 +75,7 @@ class SkinSuffixResources(resources: Resources) {
         } else context.resources.getColor(resId)
     }
 
+    @SuppressLint("UseCompatLoadingForColorStateLists")
     private fun getSkinColorStateList(context: Context, resId: Int): ColorStateList {
 
         if (!isDefaultSkin) {
@@ -88,6 +91,7 @@ class SkinSuffixResources(resources: Resources) {
         } else context.resources.getColorStateList(resId)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun getSkinDrawable(context: Context, resId: Int): Drawable {
         if (!isDefaultSkin) {
             val targetResId = getTargetResId(context, resId)

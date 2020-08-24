@@ -6,12 +6,4 @@ object SkinConfig {
     var isPathSkin: Boolean = false
     /** 是否是前缀加载 默认后缀加载 isSuffix */
     var isPrefix: Boolean = false
-
-    fun applySkin() {
-        if (isPathSkin) {
-            SkinManager.applyPathSkin()
-        } else{
-            SkinManager.applyNameSkin()
-        }
-    }
 }
