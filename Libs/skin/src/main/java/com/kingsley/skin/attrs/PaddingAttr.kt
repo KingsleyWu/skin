@@ -26,11 +26,17 @@ class PaddingAttr : SkinElementAttr() {
                 "paddingLeft" -> {
                     setPadding(padding, paddingTop, paddingRight, paddingBottom)
                 }
-                "paddingTop" -> {
-                    setPadding(paddingLeft, padding, paddingRight, paddingBottom)
+                "paddingStart" -> {
+                    setPadding(padding, paddingTop, paddingRight, paddingBottom)
                 }
                 "paddingRight" -> {
                     setPadding(paddingLeft, paddingTop, padding, paddingBottom)
+                }
+                "paddingEnd" -> {
+                    setPadding(paddingLeft, paddingTop, padding, paddingBottom)
+                }
+                "paddingTop" -> {
+                    setPadding(paddingLeft, padding, paddingRight, paddingBottom)
                 }
                 "paddingBottom" -> {
                     setPadding(paddingLeft, paddingTop, paddingRight, padding)

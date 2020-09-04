@@ -10,6 +10,10 @@ import com.kingsley.skin.SkinManager
  */
 class BackgroundAttr : SkinElementAttr() {
 
+    companion object {
+        const val TAG = "BackgroundAttr"
+    }
+
     override fun apply(view: View?) {
         super.apply(view)
 

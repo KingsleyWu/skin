@@ -27,20 +27,20 @@ class TextViewDrawableAttr : SkinElementAttr() {
                 "drawableLeft"-> {
                     setCompoundDrawablesWithIntrinsicBounds(drawable, cds[1], cds[2], cds[3])
                 }
-                "drawableTop"-> {
-                    setCompoundDrawablesWithIntrinsicBounds(cds[0], drawable, cds[2], cds[3])
+                "drawableStart"-> {
+                    setCompoundDrawablesWithIntrinsicBounds(drawable, cds[1], cds[2], cds[3])
                 }
                 "drawableRight"-> {
                     setCompoundDrawablesWithIntrinsicBounds(cds[0], cds[1], drawable, cds[3])
                 }
-                "drawableBottom"-> {
-                    setCompoundDrawablesWithIntrinsicBounds(cds[0], cds[1], cds[2], drawable)
-                }
-                "drawableStart"-> {
-                    setCompoundDrawablesWithIntrinsicBounds(drawable, cds[1], cds[2], cds[3])
-                }
                 "drawableEnd"-> {
                     setCompoundDrawablesWithIntrinsicBounds(cds[0], cds[1], drawable, cds[3])
+                }
+                "drawableTop"-> {
+                    setCompoundDrawablesWithIntrinsicBounds(cds[0], drawable, cds[2], cds[3])
+                }
+                "drawableBottom"-> {
+                    setCompoundDrawablesWithIntrinsicBounds(cds[0], cds[1], cds[2], drawable)
                 }
             }
         }

@@ -17,8 +17,9 @@ object SkinElementAttrFactory {
      * @param attrElementClazz
      *
      */
-    fun registerSkinAttr(attrName: String, attrElementClazz: Class<out SkinElementAttr>) {
+    fun registerSkinAttr(attrName: String, attrElementClazz: Class<out SkinElementAttr>) : SkinElementAttrFactory{
         supportSkinAttrs[attrName] = attrElementClazz
+        return this
     }
 
     init {
@@ -27,20 +28,40 @@ object SkinElementAttrFactory {
 
         // TextView drawable
         registerSkinAttr("textColor", TextColorAttr::class.java)
-        registerSkinAttr("textSize", TextSizeAttr::class.java)
         registerSkinAttr("drawableLeft", TextViewDrawableAttr::class.java)
         registerSkinAttr("drawableTop", TextViewDrawableAttr::class.java)
         registerSkinAttr("drawableRight", TextViewDrawableAttr::class.java)
         registerSkinAttr("drawableBottom", TextViewDrawableAttr::class.java)
+    }
 
+    fun registerTextSizeSkinAttr() : SkinElementAttrFactory{
+        registerSkinAttr("textSize", TextSizeAttr::class.java)
+        return this
+    }
+
+    fun registerPaddingSkinAttr() : SkinElementAttrFactory{
         // padding
         registerSkinAttr("padding", PaddingAttr::class.java)
         registerSkinAttr("paddingLeft", PaddingAttr::class.java)
-        registerSkinAttr("paddingTop", PaddingAttr::class.java)
+        registerSkinAttr("paddingStart", PaddingAttr::class.java)
         registerSkinAttr("paddingRight", PaddingAttr::class.java)
+        registerSkinAttr("paddingEnd", PaddingAttr::class.java)
+        registerSkinAttr("paddingTop", PaddingAttr::class.java)
         registerSkinAttr("paddingBottom", PaddingAttr::class.java)
+        return this
     }
 
+    fun registerMarginSkinAttr() : SkinElementAttrFactory{
+        // margin
+        registerSkinAttr("layout_margin", MarginAttr::class.java)
+        registerSkinAttr("layout_marginLeft", MarginAttr::class.java)
+        registerSkinAttr("layout_marginStart", MarginAttr::class.java)
+        registerSkinAttr("layout_marginRight", MarginAttr::class.java)
+        registerSkinAttr("layout_marginEnd", MarginAttr::class.java)
+        registerSkinAttr("layout_marginTop", MarginAttr::class.java)
+        registerSkinAttr("layout_marginBottom", MarginAttr::class.java)
+        return this
+    }
 
     /**
      *  创建换肤节点

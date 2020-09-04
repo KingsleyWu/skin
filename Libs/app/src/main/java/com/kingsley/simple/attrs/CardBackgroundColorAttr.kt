@@ -14,6 +14,10 @@ class CardBackgroundColorAttr : SkinElementAttr() {
 
     companion object {
         const val TAG = "CardBackgroundColorAttr"
+
+        fun getAttrNames() : List<String>{
+            return listOf("cardBackgroundColor")
+        }
     }
 
     override fun apply(view: View?) {
@@ -21,4 +25,5 @@ class CardBackgroundColorAttr : SkinElementAttr() {
             setCardBackgroundColor(SkinManager.getColorStateList(context, attrValueRefId))
         }
     }
+
 }

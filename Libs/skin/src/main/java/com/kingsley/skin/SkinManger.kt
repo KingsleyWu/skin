@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.kingsley.skin.util.SkinSpUtils
 import com.kingsley.skin.util.async
@@ -104,13 +105,13 @@ object SkinManager {
         async {
             if (SkinConfig.isPathSkin) {
                 applyPathSkin()
-            } else{
+            } else {
                 applyNameSkin()
             }
         }
     }
 
-    private fun applyPathSkin(){
+    private fun applyPathSkin() {
         // 加载资源的resource，有皮肤从皮肤中记载，没有默认的资源包加载
         skinResourcesProxy = SkinResourcesProxy(mApplication.resources)
         val skinPath = currentSkinPath()
@@ -120,7 +121,7 @@ object SkinManager {
         }
     }
 
-    private fun applyNameSkin(){
+    private fun applyNameSkin() {
         mSkinSuffixResources = SkinSuffixResources(mApplication.resources)
         mSkinSuffixResources.mSkinPkgName = mApplication.packageName
         val skinName = currentSkinName()
@@ -133,8 +134,9 @@ object SkinManager {
     /**
      * 扩展自己的皮肤属性
      */
-    fun registerSkinAttr(attrName: String, attr: Class<out SkinElementAttr>) {
+    fun registerSkinAttr(attrName: String, attr: Class<out SkinElementAttr>): SkinManager {
         SkinElementAttrFactory.registerSkinAttr(attrName, attr)
+        return this
     }
 
     /**
@@ -159,7 +161,9 @@ object SkinManager {
         val entryName = activity.resources.getResourceEntryName(value)
         val typeName = activity.resources.getResourceTypeName(value)
 
-        val skinElementAttr = SkinElementAttrFactory.createSkinAttr(attrName, value, entryName, typeName) ?: return
+        val skinElementAttr = SkinElementAttrFactory.createSkinAttr(
+            attrName, value, entryName, typeName
+        ) ?: return
 
         attrs?.add(skinElementAttr)
 
@@ -211,7 +215,8 @@ object SkinManager {
 
         // 注册所有的Activity的生命周期监听器
         //
-        mApplication.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+        mApplication.registerActivityLifecycleCallbacks(object :
+            Application.ActivityLifecycleCallbacks {
 
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
 
@@ -266,16 +271,26 @@ object SkinManager {
 
         val pm = context.packageManager
         return try {
-            val skinPackageInfo = pm.getPackageArchiveInfo(skinPkgPath, PackageManager.GET_ACTIVITIES)
+            val skinPackageInfo = pm.getPackageArchiveInfo(
+                skinPkgPath,
+                PackageManager.GET_ACTIVITIES
+            )
 
             skinPackageName = skinPackageInfo?.packageName
 
             val skinAssetManager = AssetManager::class.java.newInstance()
-            val addAssetPathMethod = skinAssetManager.javaClass.getMethod("addAssetPath", String::class.java)
+            val addAssetPathMethod = skinAssetManager.javaClass.getMethod(
+                "addAssetPath",
+                String::class.java
+            )
             addAssetPathMethod.invoke(skinAssetManager, skinPkgPath)
 
             val resources: Resources = context.resources
-            val skinResource = Resources(skinAssetManager, resources.displayMetrics, resources.configuration)
+            val skinResource = Resources(
+                skinAssetManager,
+                resources.displayMetrics,
+                resources.configuration
+            )
 
             Pair(skinResource, null)
         } catch (e: java.lang.Exception) {
@@ -483,7 +498,7 @@ object SkinManager {
      * @param context ctx
      * @param id resId
      */
-    fun getColorStateList(context: Context, id: Int): ColorStateList? {
+    fun getColorStateList(context: Context, id: Int): ColorStateList {
         return try {
             if (isPathLoader) {
                 skinResourcesProxy.getColorStateList(id)
@@ -491,7 +506,7 @@ object SkinManager {
                 mSkinSuffixResources.getColorStateList(mApplication, id)
             }
         } catch (e: Exception) {
-            ContextCompat.getColorStateList(context, id)
+            AppCompatResources.getColorStateList(context, id)
         }
     }
 
@@ -536,8 +551,8 @@ object SkinManager {
     }
 
     interface ILoaderListener {
-        fun onStart(){}
-        fun onSuccess(){}
-        fun onFailed(reason: String?){}
+        fun onStart() {}
+        fun onSuccess() {}
+        fun onFailed(reason: String?) {}
     }
 }

@@ -18,36 +18,45 @@ class MarginAttr : SkinElementAttr() {
     override fun apply(view: View?) {
         super.apply(view)
         view?.run {
-            val padding = SkinManager.getDimension(context, attrValueRefId).toInt()
-
+            val margin = SkinManager.getDimension(context, attrValueRefId).toInt()
             val lp = (layoutParams as? ViewGroup.MarginLayoutParams) ?: return
             when (attrName) {
-                "layoutMargin" -> {
+                "layout_margin" -> {
                     lp.run {
-                        leftMargin = padding
-                        topMargin = padding
-                        rightMargin = padding
-                        bottomMargin = padding
+                        leftMargin = margin
+                        topMargin = margin
+                        rightMargin = margin
+                        bottomMargin = margin
                     }
                 }
-                "layoutMarginLeft" -> {
+                "layout_marginLeft" -> {
                     lp.run {
-                        leftMargin = padding
+                        leftMargin = margin
                     }
                 }
-                "layoutMarginTop" -> {
+                "layout_marginStart" -> {
                     lp.run {
-                        topMargin = padding
+                        leftMargin = margin
                     }
                 }
-                "layoutMarginRight" -> {
+                "layout_marginRight" -> {
                     lp.run {
-                        rightMargin = padding
+                        rightMargin = margin
                     }
                 }
-                "layoutMarginBottom" -> {
+                "layout_marginEnd" -> {
                     lp.run {
-                        bottomMargin = padding
+                        rightMargin = margin
+                    }
+                }
+                "layout_marginTop" -> {
+                    lp.run {
+                        topMargin = margin
+                    }
+                }
+                "layout_marginBottom" -> {
+                    lp.run {
+                        bottomMargin = margin
                     }
                 }
                 else -> {}
