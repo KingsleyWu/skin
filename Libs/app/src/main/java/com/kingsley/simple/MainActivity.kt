@@ -1,29 +1,38 @@
 package com.kingsley.simple
 
+import android.graphics.Color
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.kingsley.skin.SkinManager
 import kotlinx.android.synthetic.main.activity_main.*
-import skin.support.SkinCompatManager
-
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(toolbar)
 
-        tv_hello.setOnClickListener(View.OnClickListener {
+        tv_hello.setOnClickListener {
             if (!it.isSelected) {
-                tv_hello.isSelected = true
-                SkinManager.applySkinName("dark")
-                //setTheme(R.style.AppTheme)
+                it.isSelected = true
+                SkinManager.applySkinName("dark", changeCallback = object : SkinManager.ILoaderListener {
+                    override fun onSuccess() {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                            window.statusBarColor = Color.GREEN
+                        }
+                    }
+                })
             } else {
-                tv_hello.isSelected = false
-                SkinManager.restoreDefaultTheme()
+                it.isSelected = false
+                SkinManager.restoreDefaultTheme(changeCallback = object : SkinManager.ILoaderListener {
+                    override fun onSuccess() {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                            window.statusBarColor = Color.RED
+                        }
+                    }
+                })
             }
-        })
-//        AppCompatResources.
+        }
     }
 }

@@ -1,7 +1,6 @@
-package com.kingsley.skin.attrs
+package com.kingsley.simple.attrs
 
 import android.view.View
-import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.kingsley.skin.SkinElementAttr
 import com.kingsley.skin.SkinManager

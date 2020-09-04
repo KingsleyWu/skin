@@ -12,7 +12,7 @@ import com.kingsley.skin.SkinManager
 class TextViewDrawableAttr : SkinElementAttr() {
 
     companion object {
-        const val TAG = "TextSizeAttr"
+        const val TAG = "TextViewDrawableAttr"
     }
 
     override fun apply(view: View?) {

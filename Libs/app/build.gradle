@@ -44,18 +44,8 @@ dependencies {
     implementation AndroidX.constraint
     implementation AndroidX.cardview
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation project(path: ':base')
     implementation project(path: ':skin')
-    // skin-support 基础控件支持
-    implementation "skin.support:skin-support:${Versions.skin}"
-// skin-support 基础控件支持
-    implementation "skin.support:skin-support-appcompat:${Versions.skin}"
-// material design 控件支持[可选]
-    implementation "skin.support:skin-support-design:${Versions.skin}"
-// ConstraintLayout 控件支持[可选]
-    implementation "skin.support:skin-support-constraint-layout:${Versions.skin}"
-// CardView 控件支持[可选]
-    implementation "skin.support:skin-support-cardview:${Versions.skin}"
 }

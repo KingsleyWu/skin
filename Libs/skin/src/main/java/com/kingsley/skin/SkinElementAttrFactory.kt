@@ -21,7 +21,6 @@ object SkinElementAttrFactory {
         supportSkinAttrs[attrName] = attrElementClazz
     }
 
-
     init {
         registerSkinAttr("background", BackgroundAttr::class.java)
         registerSkinAttr("src", ImageSrcAttr::class.java)
@@ -40,13 +39,11 @@ object SkinElementAttrFactory {
         registerSkinAttr("paddingTop", PaddingAttr::class.java)
         registerSkinAttr("paddingRight", PaddingAttr::class.java)
         registerSkinAttr("paddingBottom", PaddingAttr::class.java)
-
-        registerSkinAttr("cardBackgroundColor", CardBackgroundColorAttr::class.java)
     }
 
 
     /**
-     *
+     *  创建换肤节点
      */
     fun createSkinAttr(attrName: String, attrValueRefId: Int, attrValueRefName: String?, typeName: String?): SkinElementAttr? {
         val skinAttr = supportSkinAttrs[attrName]?.newInstance()

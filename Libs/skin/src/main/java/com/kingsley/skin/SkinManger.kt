@@ -419,14 +419,17 @@ object SkinManager {
         }
     }
 
-    fun restoreDefaultTheme() {
+    fun restoreDefaultTheme(changeCallback: ILoaderListener? = null) {
         if (mSkinResources != null) {
+            changeCallback?.onStart()
             mSkinResources = null
             isPathLoader = false
             mSkinSuffixResources.reset()
             saveCurrentSkin("")
             saveCurrentSkinName("")
             notifySkinChange()
+            // 皮肤切换成功回调
+            changeCallback?.onSuccess()
         }
     }
 
@@ -533,8 +536,8 @@ object SkinManager {
     }
 
     interface ILoaderListener {
-        fun onStart()
-        fun onSuccess()
-        fun onFailed(reason: String?)
+        fun onStart(){}
+        fun onSuccess(){}
+        fun onFailed(reason: String?){}
     }
 }
