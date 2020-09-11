@@ -39,6 +39,7 @@ dependencies {
     implementation AndroidX.legacySupportV13
     implementation AndroidX.lifecycleExtensions
     implementation AndroidX.lifecycleViewModelKtx
+    implementation AndroidX.recyclerview
     implementation Fragment.fragmentKtx
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

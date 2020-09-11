@@ -15,6 +15,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import com.kingsley.skin.util.L
 import com.kingsley.skin.util.SkinSpUtils
 import com.kingsley.skin.util.async
 import com.kingsley.skin.util.runUIThread
@@ -26,7 +27,7 @@ import java.lang.reflect.Field
  */
 object SkinManager {
 
-    private const val TAG = "SkinManager"
+    private const val TAG = "Skin"
 
     private lateinit var mApplication: Application
 
@@ -38,12 +39,12 @@ object SkinManager {
     /**
      * 通用的资源加载器
      */
-    lateinit var skinResourcesProxy: SkinResourcesProxy
+    private lateinit var skinResourcesProxy: SkinResourcesProxy
 
     /**
      * 前缀或后缀资源加载器
      */
-    lateinit var mSkinSuffixResources: SkinSuffixResources
+    private lateinit var mSkinSuffixResources: SkinSuffixResources
 
     /** skinPackageName */
     internal var skinPackageName: String? = null
@@ -149,7 +150,7 @@ object SkinManager {
 
         val activitySkinChange = mSkins[activity] ?: return
 
-        val inflaterFactory = activitySkinChange.mSkinInflaterFactory
+        val inflaterFactory = activitySkinChange.mSkinFactory2
         val skinItems = inflaterFactory.mSkinItems
 
         if (!skinItems.keys.contains(view)) {
@@ -171,26 +172,23 @@ object SkinManager {
         skinElementAttr.initApply(view)
     }
 
-
     /**
      * 该对象用来收集Activity里带有支持换肤属性的组件
      */
     private class ActivitySkinChange(activity: Activity) : SkinAble {
-        val mSkinInflaterFactory = SkinInflaterFactory()
+        val mSkinFactory2 = SkinFactory2()
 
         init {
-            mSkinInflaterFactory.mInflater = activity.layoutInflater
+            mSkinFactory2.mFactory2 = activity.layoutInflater.factory2
+            mSkinFactory2.mFactory = activity.layoutInflater.factory
             if (activity is AppCompatActivity) {
-                mSkinInflaterFactory.mAppCompatFactory = activity.layoutInflater.factory2
-                setLayoutInflaterFactory(activity.layoutInflater)
                 // 给ActivityLayoutInflater设置一个Factory来拦截所有的View创建
-                activity.layoutInflater.factory = mSkinInflaterFactory
                 setLayoutInflaterFactory(activity.layoutInflater)
-                // 给ActivityLayoutInflater设置一个Factory来拦截所有的View创建
-                activity.layoutInflater.factory2 = mSkinInflaterFactory
+                activity.layoutInflater.factory2 = mSkinFactory2
+                setLayoutInflaterFactory(activity.layoutInflater)
+                activity.layoutInflater.factory = mSkinFactory2
             } else {
-                // 给ActivityLayoutInflater设置一个Factory来拦截所有的View创建
-                activity.layoutInflater.factory = mSkinInflaterFactory
+                activity.layoutInflater.factory = mSkinFactory2
             }
             activity.isImmersive
         }
@@ -206,7 +204,7 @@ object SkinManager {
         }
 
         override fun onChange() {
-            mSkinInflaterFactory.applySkin()
+            mSkinFactory2.applySkin()
         }
     }
 
@@ -214,18 +212,16 @@ object SkinManager {
     private fun addActivityCallback() {
 
         // 注册所有的Activity的生命周期监听器
-        //
         mApplication.registerActivityLifecycleCallbacks(object :
             Application.ActivityLifecycleCallbacks {
 
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-
                 //
                 mSkins[activity] = ActivitySkinChange(activity)
             }
 
             override fun onActivityDestroyed(activity: Activity) {
-                mSkins[activity]?.mSkinInflaterFactory?.clean()
+                mSkins[activity]?.mSkinFactory2?.clean()
                 mSkins.remove(activity)
             }
 
@@ -234,7 +230,6 @@ object SkinManager {
 
             override fun onActivityStarted(activity: Activity) {
             }
-
 
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
             }
@@ -324,7 +319,7 @@ object SkinManager {
         // 防止快速切换
         if (isApplying) return
 
-        Log.d(TAG, "applySkin:$skinPkgPath, current:$currentSkinPath")
+        L.d(TAG, "applySkin:$skinPkgPath, current:$currentSkinPath")
 
         // 防止无效切换
         if ((isDefaultSkin() && skinPkgPath.isNullOrEmpty()) || skinPkgPath == currentSkinPath) {
@@ -340,7 +335,7 @@ object SkinManager {
             }
         } else {
             isPathLoader = true
-            Log.d(TAG, "applySkin:$skinPkgPath")
+            L.d(TAG, "applySkin:$skinPkgPath")
             async(
                 preExecute = {
                     changeCallback?.onStart()
@@ -351,7 +346,7 @@ object SkinManager {
                 postExecute = {
                     val result = it!!
 
-                    Log.d(TAG, "applySkinComplete:$skinPkgPath, result:$it")
+                    L.d(TAG, "applySkinComplete:$skinPkgPath, result:$it")
                     if (result.first != null) { // 皮肤切换成功
                         // 保存皮肤路径
                         saveCurrentSkin(skinPkgPath)
@@ -389,7 +384,7 @@ object SkinManager {
         // 防止快速切换
         if (isApplying) return
 
-        Log.d(TAG, "applySkinName:$skinName, current:$currentSkinName")
+        L.d(TAG, "applySkinName:$skinName, current:$currentSkinName")
 
         // 防止无效切换
         if ((isDefaultSkin() && skinName.isNullOrEmpty()) || skinName == currentSkinName) {
@@ -405,7 +400,7 @@ object SkinManager {
                 isApplying = false
             }
         } else {
-            Log.d(TAG, "applySkin:$skinName")
+            L.d(TAG, "applySkin:$skinName")
             isPathLoader = false
             async(
                 preExecute = {
@@ -419,7 +414,7 @@ object SkinManager {
                 postExecute = {
                     val result = it!!
 
-                    Log.d(TAG, "applySkinComplete:$skinName, result:$it")
+                    L.d(TAG, "applySkinComplete:$skinName, result:$it")
                     // 皮肤切换成功
                     // 保存皮肤路径
                     saveCurrentSkinName(skinName)
@@ -489,6 +484,7 @@ object SkinManager {
                 mSkinSuffixResources.getColor(mApplication, id)
             }
         } catch (e: Exception) {
+            L.e(TAG, e)
             ContextCompat.getColor(context, id)
         }
     }
@@ -506,6 +502,7 @@ object SkinManager {
                 mSkinSuffixResources.getColorStateList(mApplication, id)
             }
         } catch (e: Exception) {
+            L.e(TAG, e)
             AppCompatResources.getColorStateList(context, id)
         }
     }
@@ -523,6 +520,7 @@ object SkinManager {
                 mSkinSuffixResources.mResources.getDimension(id)
             }
         } catch (e: Exception) {
+            L.e(TAG, e)
             context.resources.getDimension(id)
         }
     }
@@ -540,6 +538,7 @@ object SkinManager {
                 mSkinSuffixResources.getDrawable(mApplication, id)
             }
         } catch (e: Exception) {
+            L.e(TAG, e)
             ContextCompat.getDrawable(context, id)
         }
     }

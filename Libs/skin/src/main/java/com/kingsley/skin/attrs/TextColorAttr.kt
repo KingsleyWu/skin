@@ -21,7 +21,13 @@ class TextColorAttr : SkinElementAttr() {
 //        Log.d(TAG, "applyView:$view, this: $this")
 
         (view as? TextView)?.run {
-            setTextColor(SkinManager.getColorStateList(context, attrValueRefId))
+            when (attrName) {
+                "textColor" ->
+                    setTextColor(SkinManager.getColorStateList(context, attrValueRefId))
+                "textColorHint" ->
+                    setHintTextColor(SkinManager.getColorStateList(context, attrValueRefId))
+
+            }
         }
     }
 }
