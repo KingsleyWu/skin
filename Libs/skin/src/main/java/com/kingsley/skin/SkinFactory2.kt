@@ -35,37 +35,6 @@ class SkinFactory2 : Factory2 {
         attrs: AttributeSet
     ): View? {
         L.d(TAG, "onCreateView name : $name")
-        L.d(TAG, "onCreateView : ${attrs.styleAttribute}")
-        if (attrs.styleAttribute != 0) {
-            //val typedValue = TypedValue()
-            //val resolveAttribute = context.theme.resolveAttribute(attrs.styleAttribute, typedValue, true)
-            val typedArray = context.obtainStyledAttributes(
-                attrs.styleAttribute,
-                SkinElementAttrFactory.getSkinStyle()
-            )
-            L.d(TAG, "onCreateView typedArray length : ${typedArray.length()}")
-            L.d(TAG, "onCreateView typedArray indexCount : ${typedArray.indexCount}")
-            for (i in 0 until typedArray.length()) {
-                val attr = typedArray.peekValue(i)
-                L.d(TAG, "onCreateView typedArray attr : ${attr?.coerceToString()} R.attr.background = ${android.R.attr.background}")
-                val resourceId = typedArray.getResourceId(i,-1)
-                L.d(TAG, "onCreateView typedArray resourceId : $resourceId")
-            }
-
-            typedArray.recycle()
-           // if (resolveAttribute){
-            //    L.d(TAG, "onCreateView string : ${typedValue.string} coerceToString : ${typedValue.coerceToString()}  resourceId : ${typedValue.resourceId}  data : ${typedValue.data}")
-           // }
-            //val typedArray = context.obtainStyledAttributes(attrs.styleAttribute, IntArray(2))
-            //typedArray.recycle()
-        }
-//        val skinStyle = R.styleable.SkinStyle
-//        val typedArray = context.obtainStyledAttributes(attrs, skinStyle)
-//        for (i in skinStyle.indices) {
-//            typedArray.recycle()
-//            val i1 = skinStyle[i]
-//        }
-//        typedArray.recycle()
         // 先收集属性，看是否有换肤支持的属性
         val skinAttrs = parseSkinAttr(context, attrs)
         var view: View? = null
@@ -75,18 +44,18 @@ class SkinFactory2 : Factory2 {
             if (view == null) {
                 view = it.onCreateView(name, context, attrs)
             }
-            L.d(TAG, "onCreateView mFactory2 context:$context, name:$name $view")
+            L.d(TAG, "onCreateView mFactory2 context : $context, name : $name $view")
         }
 
         if (view == null) {
             mFactory2?.let {
                 view = it.onCreateView(name, context, attrs)
-                L.d(TAG, "onCreateView mFactory context:$context, name:$name $view")
+                L.d(TAG, "onCreateView mFactory context : $context, name : $name $view")
             }
         }
         if (view == null) {
             view = createView(name, context, attrs)
-            L.d(TAG, "onCreateView createView context:$context, name:$name $view")
+            L.d(TAG, "onCreateView createView context : $context, name : $name $view")
         }
         // 看是否有换肤支持的属性，如果没有，则不拦截
         if (view != null && skinAttrs.isNotEmpty()) {
@@ -130,6 +99,40 @@ class SkinFactory2 : Factory2 {
      */
     private fun parseSkinAttr(context: Context, attrs: AttributeSet): ArrayList<SkinElementAttr> {
         val viewAttrs: ArrayList<SkinElementAttr> = ArrayList()
+        L.d(TAG, "onCreateView : ${attrs.styleAttribute}")
+        if (attrs.styleAttribute != 0) {
+            val typedArray = context.obtainStyledAttributes(
+                attrs.styleAttribute,
+                SkinElementAttrFactory.getSkinStyle()
+            )
+            L.d(TAG, "onCreateView typedArray length : ${typedArray.length()}")
+            L.d(TAG, "onCreateView typedArray indexCount : ${typedArray.indexCount}")
+            for (i in 0 until typedArray.indexCount) {
+                val index = typedArray.getIndex(i)
+                val attr = typedArray.peekValue(index)
+                if (attr?.resourceId != 0) {
+                    try {
+                        val id = attr.resourceId
+                        val entryName = context.resources.getResourceEntryName(id)
+                        val typeName = context.resources.getResourceTypeName(id)
+                        val attrName = SkinElementAttrFactory.getStyleAttrName(index)
+                        attrName?.let { attrName ->
+                            val skinAttr =
+                                SkinElementAttrFactory.createSkinAttr(attrName, id, entryName, typeName)
+                            skinAttr?.let { viewAttrs.add(it) }
+                        }
+                    } catch (e: NumberFormatException) {
+                        L.e(TAG, " parseSkinAttr error : ", e)
+                    } catch (e: Resources.NotFoundException) {
+                        L.e(TAG, " parseSkinAttr error : ", e)
+                    }
+                    L.d(TAG, "onCreateView typedArray attr : ${attr?.coerceToString()} ")
+                    L.d(TAG, "onCreateView typedArray resourceId : ${attr?.resourceId}")
+                    L.d(TAG, "onCreateView typedArray index : $index")
+                }
+            }
+            typedArray.recycle()
+        }
         for (i in 0 until attrs.attributeCount) {
             val attrName = attrs.getAttributeName(i)
             val attrValue = attrs.getAttributeValue(i)
@@ -138,9 +141,7 @@ class SkinFactory2 : Factory2 {
             if (!SkinElementAttrFactory.isSupportedAttr(attrName)) {
                 continue
             }
-            if (attrValue.startsWith("@0")) {
-                continue
-            }
+
             // 只有@开头的才表示用了引用资源
             if (attrValue.startsWith("@")) {
                 try {

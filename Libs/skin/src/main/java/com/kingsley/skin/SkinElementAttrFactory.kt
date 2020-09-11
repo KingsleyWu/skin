@@ -10,7 +10,7 @@ object SkinElementAttrFactory {
 
     private val supportSkinAttrs: MutableMap<String, Class<out SkinElementAttr>> = mutableMapOf()
 
-    private val mSkinStyle: MutableMap<Int, Map<String, Class<out SkinElementAttr>>> = mutableMapOf()
+    private val mSkinStyle: MutableMap<Int, String> = mutableMapOf()
 
     /**
      * 添加一个换肤
@@ -29,41 +29,47 @@ object SkinElementAttrFactory {
      *
      * @param attr
      * @param attrName
-     * @param attrElementClazz
      *
      */
-    fun registerSkinStyle(attrName: String, attr: Int, attrElementClazz: Class<out SkinElementAttr>) : SkinElementAttrFactory{
-        mSkinStyle[attr] = mapOf(attrName to attrElementClazz)
+    fun registerSkinStyle(attrName: String, attr: Int) : SkinElementAttrFactory{
+        mSkinStyle[attr] = attrName
         return this
     }
 
     init {
         registerSkinAttr("background", BackgroundAttr::class.java)
-        registerSkinStyle("background", R.attr.background, BackgroundAttr::class.java)
         registerSkinAttr("src", ImageSrcAttr::class.java)
-        registerSkinStyle("background", android.R.attr.src, BackgroundAttr::class.java)
         registerSkinAttr("srcCompat", ImageSrcAttr::class.java)
-        registerSkinStyle("background", R.attr.srcCompat, BackgroundAttr::class.java)
+
+        registerSkinStyle("background", android.R.attr.background)
+        registerSkinStyle("src", android.R.attr.src)
+        registerSkinStyle("srcCompat", androidx.appcompat.R.attr.srcCompat)
 
         // TextView drawable
         registerSkinAttr("textColor", TextColorAttr::class.java)
-        registerSkinStyle("textColor", android.R.attr.textColor, TextColorAttr::class.java)
         registerSkinAttr("textColorHint", TextColorAttr::class.java)
-        registerSkinStyle("textColorHint", android.R.attr.textColorHint, TextColorAttr::class.java)
+
+        registerSkinStyle("textColor", android.R.attr.textColor)
+        registerSkinStyle("textColorHint", android.R.attr.textColorHint)
 
         registerSkinAttr("drawableLeft", TextViewDrawableAttr::class.java)
-        registerSkinStyle("drawableLeft", android.R.attr.drawableLeft, TextViewDrawableAttr::class.java)
-        registerSkinAttr("drawableTop", TextViewDrawableAttr::class.java)
-        registerSkinStyle("drawableTop", android.R.attr.drawableTop, TextViewDrawableAttr::class.java)
+        registerSkinAttr("drawableStart", TextViewDrawableAttr::class.java)
         registerSkinAttr("drawableRight", TextViewDrawableAttr::class.java)
-        registerSkinStyle("drawableRight", android.R.attr.drawableRight, TextViewDrawableAttr::class.java)
+        registerSkinAttr("drawableEnd", TextViewDrawableAttr::class.java)
+        registerSkinAttr("drawableTop", TextViewDrawableAttr::class.java)
         registerSkinAttr("drawableBottom", TextViewDrawableAttr::class.java)
-        registerSkinStyle("drawableBottom", android.R.attr.drawableBottom, TextViewDrawableAttr::class.java)
+
+        registerSkinStyle("drawableLeft", android.R.attr.drawableLeft)
+        registerSkinStyle("drawableStart", android.R.attr.drawableStart)
+        registerSkinStyle("drawableRight", android.R.attr.drawableRight)
+        registerSkinStyle("drawableEnd", android.R.attr.drawableEnd)
+        registerSkinStyle("drawableTop", android.R.attr.drawableTop)
+        registerSkinStyle("drawableBottom", android.R.attr.drawableBottom)
     }
 
     fun registerTextSizeSkinAttr() : SkinElementAttrFactory{
         registerSkinAttr("textSize", TextSizeAttr::class.java)
-        registerSkinStyle("textSize", android.R.attr.textSize, TextSizeAttr::class.java)
+        registerSkinStyle("textSize", android.R.attr.textSize)
         return this
     }
 
@@ -77,13 +83,13 @@ object SkinElementAttrFactory {
         registerSkinAttr("paddingTop", PaddingAttr::class.java)
         registerSkinAttr("paddingBottom", PaddingAttr::class.java)
 
-        registerSkinStyle("padding", android.R.attr.padding, PaddingAttr::class.java)
-        registerSkinStyle("paddingLeft", android.R.attr.paddingLeft, PaddingAttr::class.java)
-        registerSkinStyle("paddingStart", android.R.attr.paddingStart, PaddingAttr::class.java)
-        registerSkinStyle("paddingRight", android.R.attr.paddingRight, PaddingAttr::class.java)
-        registerSkinStyle("paddingEnd", android.R.attr.paddingEnd, PaddingAttr::class.java)
-        registerSkinStyle("paddingTop", android.R.attr.paddingTop, PaddingAttr::class.java)
-        registerSkinStyle("paddingBottom", android.R.attr.paddingBottom, PaddingAttr::class.java)
+        registerSkinStyle("padding", android.R.attr.padding)
+        registerSkinStyle("paddingLeft", android.R.attr.paddingLeft)
+        registerSkinStyle("paddingStart", android.R.attr.paddingStart)
+        registerSkinStyle("paddingRight", android.R.attr.paddingRight)
+        registerSkinStyle("paddingEnd", android.R.attr.paddingEnd)
+        registerSkinStyle("paddingTop", android.R.attr.paddingTop)
+        registerSkinStyle("paddingBottom", android.R.attr.paddingBottom)
         return this
     }
 
@@ -97,13 +103,13 @@ object SkinElementAttrFactory {
         registerSkinAttr("layout_marginTop", MarginAttr::class.java)
         registerSkinAttr("layout_marginBottom", MarginAttr::class.java)
 
-        registerSkinStyle("layout_margin", android.R.attr.layout_margin, MarginAttr::class.java)
-        registerSkinStyle("layout_marginLeft", android.R.attr.layout_marginLeft, MarginAttr::class.java)
-        registerSkinStyle("layout_marginStart", android.R.attr.layout_marginStart, MarginAttr::class.java)
-        registerSkinStyle("layout_marginRight", android.R.attr.layout_marginRight, MarginAttr::class.java)
-        registerSkinStyle("layout_marginEnd", android.R.attr.layout_marginEnd, MarginAttr::class.java)
-        registerSkinStyle("layout_marginTop", android.R.attr.layout_marginTop, MarginAttr::class.java)
-        registerSkinStyle("layout_marginBottom", android.R.attr.layout_marginBottom, MarginAttr::class.java)
+        registerSkinStyle("layout_margin", android.R.attr.layout_margin)
+        registerSkinStyle("layout_marginLeft", android.R.attr.layout_marginLeft)
+        registerSkinStyle("layout_marginStart", android.R.attr.layout_marginStart)
+        registerSkinStyle("layout_marginRight", android.R.attr.layout_marginRight)
+        registerSkinStyle("layout_marginEnd", android.R.attr.layout_marginEnd)
+        registerSkinStyle("layout_marginTop", android.R.attr.layout_marginTop)
+        registerSkinStyle("layout_marginBottom", android.R.attr.layout_marginBottom)
         return this
     }
 
@@ -132,4 +138,9 @@ object SkinElementAttrFactory {
     fun getSkinStyle(): IntArray{
         return mSkinStyle.keys.toIntArray()
     }
+
+    fun getStyleAttrName(index: Int): String?{
+        return mSkinStyle[getSkinStyle()[index]]
+    }
+
 }

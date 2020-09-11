@@ -34,6 +34,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
 }
 
 dependencies {
@@ -43,6 +48,12 @@ dependencies {
     implementation AndroidX.coreKtx
     implementation AndroidX.constraint
     implementation AndroidX.cardview
+    implementation AndroidX.lifecycleExtensions
+    implementation AndroidX.lifecycleViewModelKtx
+    implementation AndroidX.lifecycleLiveDataKtx
+    implementation AndroidX.lifecycleRuntimeKtx
+    implementation Retrofit.retrofit
+    implementation Kt.kotlinxCoroutines
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

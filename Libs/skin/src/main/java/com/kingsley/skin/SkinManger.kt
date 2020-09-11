@@ -141,6 +141,14 @@ object SkinManager {
     }
 
     /**
+     * 扩展自己的皮肤属性
+     */
+    fun registerSkinStyle(attrName: String, attr: Int): SkinManager {
+        SkinElementAttrFactory.registerSkinStyle(attrName, attr)
+        return this
+    }
+
+    /**
      * 当元素的属性值是通过代码设置的时候，需要手动把要换肤的元素和属性添加到皮肤框架中
      */
     fun addSkinAttr(activity: Activity, view: View, attrName: String, value: Int) {

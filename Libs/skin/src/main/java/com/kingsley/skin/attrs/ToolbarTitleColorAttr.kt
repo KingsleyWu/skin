@@ -16,10 +16,15 @@ class ToolbarTitleColorAttr : SkinElementAttr() {
     companion object {
         const val TAG = "ToolbarTitleColorAttr"
 
-        fun registerSkinAttr(){
-            for (attrName in listOf("titleTextColor", "subtitleTextColor")) {
-                SkinManager.registerSkinAttr("attrName", ToolbarTitleColorAttr::class.java)
-            }
+        fun registerSkinAttr() {
+            SkinManager.registerSkinStyle(
+                "titleTextColor",
+                androidx.appcompat.R.styleable.Toolbar_titleTextColor
+            ).registerSkinStyle(
+                "subtitleTextColor",
+                androidx.appcompat.R.styleable.Toolbar_subtitleTextColor
+            ).registerSkinAttr("titleTextColor", ToolbarTitleColorAttr::class.java)
+                .registerSkinAttr("subtitleTextColor", ToolbarTitleColorAttr::class.java)
         }
     }
 

@@ -15,8 +15,13 @@ class CardBackgroundColorAttr : SkinElementAttr() {
     companion object {
         const val TAG = "CardBackgroundColorAttr"
 
-        fun registerSkinAttr(){
-            SkinManager.registerSkinAttr("cardBackgroundColor", CardBackgroundColorAttr::class.java)
+        fun registerSkinAttr() {
+            SkinManager
+                .registerSkinAttr("cardBackgroundColor", CardBackgroundColorAttr::class.java)
+                .registerSkinStyle(
+                    "cardBackgroundColor",
+                    androidx.cardview.R.styleable.CardView_cardBackgroundColor,
+                )
         }
     }
 

@@ -1,6 +1,5 @@
 package com.kingsley.simple
 
-import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -40,8 +39,7 @@ class MainActivity : AppCompatActivity() {
                 })
             }
         }
-
         L.d(SkinFactory2.TAG,"onCreateView LineStyle : ${R.style.LineStyle}")
-        L.d(SkinFactory2.TAG,"onCreateView LineStyle 2 : ${R.color.line_color}")
+        L.d(SkinFactory2.TAG,"onCreateView LineStyle 2 : ${R.color.main_background}")
     }
 }
