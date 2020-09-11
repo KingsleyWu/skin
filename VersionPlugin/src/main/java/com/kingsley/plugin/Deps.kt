@@ -5,7 +5,8 @@ package com.kingsley.plugin
  */
 
 object Versions {
-    const val kotlin = "1.3.72"
+    const val kotlin = "1.4.0"
+    const val kotlinxCoroutines = "1.3.9"
     const val coreKtx = "1.3.1"
     const val multidex = "2.0.1"
 
@@ -84,6 +85,8 @@ object AndroidX {
 
     val lifecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleExtensions}"
     val lifecycleViewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycleViewModelKtx}"
+    val lifecycleLiveDataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycleViewModelKtx}"
+    val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycleViewModelKtx}"
 }
 
 object Hilt {
@@ -116,6 +119,7 @@ object Kt {
     val stdlibJdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
     val test = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}"
     val plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+    val kotlinxCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}"
 }
 
 object Koin {
@@ -133,7 +137,7 @@ object Anko {
 }
 
 object Retrofit {
-    val runtime = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
+    val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     val gson = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     val mock = "com.squareup.retrofit2:retrofit-mock:${Versions.retrofit}"
     val logging = "com.squareup.okhttp3:logging-interceptor:${Versions.okHttpLogging}"
