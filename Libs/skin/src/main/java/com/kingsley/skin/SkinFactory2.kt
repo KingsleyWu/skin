@@ -2,11 +2,13 @@ package com.kingsley.skin
 
 import android.content.Context
 import android.content.res.Resources
+import android.text.TextUtils
 import android.util.AttributeSet
+import android.view.InflateException
 import android.view.LayoutInflater
-import android.view.LayoutInflater.Factory2
 import android.view.View
 import com.kingsley.skin.util.L
+import java.lang.reflect.Constructor
 
 
 /**
@@ -14,15 +16,18 @@ import com.kingsley.skin.util.L
  * 拦截所有XML中的View创建，检查View是否有换肤支持的属性，如果没有，则不拦截
  * Created by kingsley on 2020/9/9
  */
-class SkinFactory2 : Factory2 {
+class SkinFactory2 : LayoutInflater.Factory2 {
 
     var mFactory: LayoutInflater.Factory? = null
-    var mFactory2: Factory2? = null
+    var mFactory2: LayoutInflater.Factory2? = null
 
     /**
      * Store the view item that need skin changing in the activity
      */
     internal val mSkinItems: MutableMap<View, SkinElement> = mutableMapOf()
+
+    private val sConstructorSignature = arrayOf(Context::class.java, AttributeSet::class.java)
+    private val sConstructorMap: MutableMap<String, Constructor<out View?>> = mutableMapOf()
 
     companion object {
         const val TAG = "SkinFactory2@@"
@@ -34,21 +39,18 @@ class SkinFactory2 : Factory2 {
         context: Context,
         attrs: AttributeSet
     ): View? {
-        L.d(TAG, "onCreateView name : $name")
+        L.d(TAG, "onCreateView context : $context, name : $name")
         // 先收集属性，看是否有换肤支持的属性
         val skinAttrs = parseSkinAttr(context, attrs)
         var view: View? = null
         //防止与其他调用factory库冲突，例如字体、皮肤替换库，用已经设置的factory来创建view
         mFactory2?.let {
             view = it.onCreateView(parent, name, context, attrs)
-            if (view == null) {
-                view = it.onCreateView(name, context, attrs)
-            }
             L.d(TAG, "onCreateView mFactory2 context : $context, name : $name $view")
         }
 
         if (view == null) {
-            mFactory2?.let {
+            mFactory?.let {
                 view = it.onCreateView(name, context, attrs)
                 L.d(TAG, "onCreateView mFactory context : $context, name : $name $view")
             }
@@ -56,6 +58,10 @@ class SkinFactory2 : Factory2 {
         if (view == null) {
             view = createView(name, context, attrs)
             L.d(TAG, "onCreateView createView context : $context, name : $name $view")
+        }
+        if (view == null) {
+            view = createViewFromTag(context, name, attrs)
+            L.d(TAG, "onCreateView createViewFromTag context : $context, name : $name $view")
         }
         // 看是否有换肤支持的属性，如果没有，则不拦截
         if (view != null && skinAttrs.isNotEmpty()) {
@@ -89,9 +95,61 @@ class SkinFactory2 : Factory2 {
                 }
             }
         } catch (e: Exception) {
-            L.e(TAG, "createView error while create 【" + name + "】 : " + e.message)
+            L.e(TAG, "createView error while create 【$name】 : ", e)
         }
         return view
+    }
+
+
+    private fun createViewFromTag(context: Context, name: String, attrs: AttributeSet): View? {
+        if (TextUtils.isEmpty(name)) {
+            return null
+        }
+        return try {
+            if (-1 == name.indexOf('.')) {
+                var view: View? = null
+                if ("View" == name) {
+                    view = createView(context, attrs, name, "android.view.")
+                }
+                if (view == null) {
+                    view = createView(context, attrs, name, "android.widget.")
+                }
+                if (view == null) {
+                    view = createView(context, attrs, name, "android.webkit.")
+                }
+                view
+            } else {
+                createView(context, attrs, name, null)
+            }
+        } catch (e: Exception) {
+            L.e(TAG, "cannot create 【$name】 : ", e)
+            null
+        }
+    }
+
+    @Throws(InflateException::class)
+    private fun createView(
+        context: Context,
+        attrs: AttributeSet,
+        name: String,
+        prefix: String?
+    ): View? {
+        var constructor: Constructor<out View>? = sConstructorMap[name]
+        return try {
+            if (constructor == null) {
+                val clazz = context.classLoader.loadClass(
+                    if (prefix != null) prefix + name else name
+                ).asSubclass(View::class.java)
+                constructor = clazz.getConstructor(*sConstructorSignature)
+                sConstructorMap[name] = constructor
+            }
+            constructor.isAccessible = true
+            val view = constructor.newInstance(context, attrs)
+            return view
+        } catch (e: Exception) {
+            L.e(TAG, "cannot create 【$name】 : ", e)
+            null
+        }
     }
 
     /**
@@ -118,7 +176,12 @@ class SkinFactory2 : Factory2 {
                         val attrName = SkinElementAttrFactory.getStyleAttrName(index)
                         attrName?.let { attrName ->
                             val skinAttr =
-                                SkinElementAttrFactory.createSkinAttr(attrName, id, entryName, typeName)
+                                SkinElementAttrFactory.createSkinAttr(
+                                    attrName,
+                                    id,
+                                    entryName,
+                                    typeName
+                                )
                             skinAttr?.let { viewAttrs.add(it) }
                         }
                     } catch (e: NumberFormatException) {
@@ -139,6 +202,9 @@ class SkinFactory2 : Factory2 {
             L.d(TAG, " parseSkinAttr attrName : $attrName  attrValue : $attrValue")
             // 看属性是否是支持换肤的属性
             if (!SkinElementAttrFactory.isSupportedAttr(attrName)) {
+                continue
+            }
+            if (attrValue.startsWith("@0")) {
                 continue
             }
 

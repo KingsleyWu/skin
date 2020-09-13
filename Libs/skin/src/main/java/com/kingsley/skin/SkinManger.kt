@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.kingsley.skin.util.L
@@ -189,16 +188,12 @@ object SkinManager {
         init {
             mSkinFactory2.mFactory2 = activity.layoutInflater.factory2
             mSkinFactory2.mFactory = activity.layoutInflater.factory
-            if (activity is AppCompatActivity) {
-                // 给ActivityLayoutInflater设置一个Factory来拦截所有的View创建
-                setLayoutInflaterFactory(activity.layoutInflater)
-                activity.layoutInflater.factory2 = mSkinFactory2
-                setLayoutInflaterFactory(activity.layoutInflater)
-                activity.layoutInflater.factory = mSkinFactory2
-            } else {
-                activity.layoutInflater.factory = mSkinFactory2
-            }
-            activity.isImmersive
+            // 给ActivityLayoutInflater设置一个Factory来拦截所有的View创建
+            setLayoutInflaterFactory(activity.layoutInflater)
+            activity.layoutInflater.factory2 = mSkinFactory2
+            setLayoutInflaterFactory(activity.layoutInflater)
+            activity.layoutInflater.factory = mSkinFactory2
+            L.d(TAG, "activity.layoutInflater.factory2 ${activity.layoutInflater.factory2} mSkinFactory2.mFactory ${mSkinFactory2.mFactory} mSkinFactory2.mFactory2 ${mSkinFactory2.mFactory2} ")
         }
 
         fun setLayoutInflaterFactory(original: LayoutInflater) {
