@@ -27,17 +27,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation Kt.stdlibJdk7
+    implementation Kt.stdlibJdk8
     implementation AndroidX.appcompat
     implementation AndroidX.coreKtx
     implementation AndroidX.legacySupportV4
     implementation AndroidX.legacySupportV13
-    implementation AndroidX.lifecycleExtensions
     implementation AndroidX.lifecycleViewModelKtx
     implementation AndroidX.recyclerview
     implementation Fragment.fragmentKtx

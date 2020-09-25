@@ -5,7 +5,7 @@ package com.kingsley.plugin
  */
 
 object Versions {
-    const val kotlin = "1.4.0"
+    const val kotlin = "1.4.10"
     const val kotlinxCoroutines = "1.3.9"
     const val coreKtx = "1.3.1"
     const val multidex = "2.0.1"
@@ -83,7 +83,6 @@ object AndroidX {
     val legacySupportV4 = "androidx.legacy:legacy-support-v4:${Versions.legacySupportV4}"
     val legacySupportV13 = "androidx.legacy:legacy-support-v13:${Versions.legacySupportV13}"
 
-    val lifecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleExtensions}"
     val lifecycleViewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycleViewModelKtx}"
     val lifecycleLiveDataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycleViewModelKtx}"
     val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycleViewModelKtx}"
