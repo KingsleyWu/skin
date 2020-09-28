@@ -30,4 +30,9 @@ abstract class ItemViewDelegate<T, VH : RecyclerView.ViewHolder>{
     open fun onViewDetachedFromWindow(holder: VH) {}
 
     open fun getItemId(item: T): Long = RecyclerView.NO_ID
+
+    /**
+     * 用于 区分 一个class 对应多个 delegate 的方法
+     */
+    open fun isMach(item: T) : Boolean = true
 }

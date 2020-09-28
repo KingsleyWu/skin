@@ -1,6 +1,8 @@
 package com.kingsley.adapter
 
 import android.view.ViewGroup
+import androidx.collection.SparseArrayCompat
+import androidx.collection.forEach
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import kotlin.reflect.KClass
@@ -10,7 +12,17 @@ import kotlin.reflect.KClass
  */
 open class MultiTypeAdapter @JvmOverloads constructor(open var items: List<Any> = emptyList()) :
     Adapter<ViewHolder>() {
-    private val helper: Helper by lazy { Helper() }
+    /** 注册的 class */
+    private val mClassCache: MutableList<Class<*>> by lazy { mutableListOf() }
+
+    /** class 对应的 Delegates */
+    private val mDelegates: MutableMap<Class<*>, SparseArrayCompat<ItemViewDelegate<*, *>>> by lazy { mutableMapOf() }
+
+    /** viewType 对应的 Delegate */
+    private val viewTypeDelegates: SparseArrayCompat<ItemViewDelegate<*, *>> by lazy { SparseArrayCompat() }
+
+    /** 上一个 viewType 对应的 值 */
+    private var mLastViewType: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return getDelegate(viewType).onCreateViewHolder(parent.context, parent)
@@ -43,26 +55,26 @@ open class MultiTypeAdapter @JvmOverloads constructor(open var items: List<Any> 
     }
 
     override fun getItemViewType(position: Int): Int {
-        val data = items.getOrNull(position)
-        data?.let {
-            val viewType = helper.types[data.javaClass] ?: indexOf(position, data)
-            viewType?.let {
-                if (viewType != -1) {
-                    return viewType
-                }
-            }
+        val item = items.getOrNull(position)
+        val viewType = getItemViewType(item)
+        viewType?.let {
+            return viewType
         }
         //找不到匹配的 viewType
         throw NullPointerException(
-            "No holder added that matches at position=$position in data source, class name =${data?.javaClass}"
+            "No delegate added that matches at position=$position in data source, class name =${item?.javaClass}"
         )
     }
 
-    private fun indexOf(position: Int, data: Any): Int? {
-        val function = helper.oneToManyFun[data.javaClass]
-        function?.let {
-            helper.oneToManyDelegateMap[it(position, data)]?.let {
-                return helper.delegates.indexOfValue(it)
+    private fun getItemViewType(item: Any?): Int? {
+        item?.let {
+            val clazz: Class<*> = item.javaClass
+            mDelegates[clazz]?.forEach { viewType, delegate ->
+                @Suppress("UNCHECKED_CAST")
+                delegate as ItemViewDelegate<Any, ViewHolder>
+                if (delegate.isMach(item)) {
+                    return viewType
+                }
             }
         }
         return null
@@ -70,7 +82,7 @@ open class MultiTypeAdapter @JvmOverloads constructor(open var items: List<Any> 
 
     private fun getDelegate(viewType: Int): ItemViewDelegate<Any, ViewHolder> {
         @Suppress("UNCHECKED_CAST")
-        return helper.delegates[viewType] as ItemViewDelegate<Any, ViewHolder>
+        return viewTypeDelegates[viewType] as ItemViewDelegate<Any, ViewHolder>
     }
 
     /**
@@ -87,18 +99,37 @@ open class MultiTypeAdapter @JvmOverloads constructor(open var items: List<Any> 
      * tips： 此方法会覆盖 之前一对多 注册的 delegate
      */
     fun <T> register(clazz: Class<T>, delegate: ItemViewDelegate<T, *>) {
-        RegisterBuilder(clazz, helper).delegate(delegate).doRegister()
+        var viewType = mClassCache.indexOf(clazz)
+        if (viewType == -1) {
+            viewType = mClassCache.size
+            mClassCache.add(clazz)
+        }
+        var delegates = mDelegates[clazz]
+        if (delegates == null) {
+            delegates = SparseArrayCompat()
+        } else {
+            val index = delegates.indexOfValue(delegate)
+            viewType = if (index != -1) index else mLastViewType + 1
+        }
+        if (viewType > mLastViewType) {
+            mLastViewType = viewType
+        }
+        delegates.put(viewType, delegate)
+        mDelegates[clazz] = delegates
+        viewTypeDelegates.put(viewType, delegate)
     }
 
-    inline fun <reified T : Any> register(delegate: ItemViewDelegate<T, *>) {
+    inline fun <reified T : Any> register(delegate: ItemViewDelegate<T, *>): MultiTypeAdapter {
         register(T::class.java, delegate)
+        return this
     }
 
-    fun <T : Any> register(clazz: KClass<T>, delegate: ItemViewDelegate<T, *>) {
+    fun <T : Any> register(clazz: KClass<T>, delegate: ItemViewDelegate<T, *>): MultiTypeAdapter {
         register(clazz.java, delegate)
+        return this
     }
 
-    fun <T : Any> with(clazz: KClass<T>): OneToManyRegister<T> {
+    fun <T : Any> with(clazz: KClass<T>): RegisterBuilder<T> {
         return with(clazz.java)
     }
 
@@ -106,7 +137,7 @@ open class MultiTypeAdapter @JvmOverloads constructor(open var items: List<Any> 
      * 注册 一对多 delegate
      * tips： 此方法会覆盖 之前一对一 注册的 delegate
      */
-    fun <T : Any> with(clazz: Class<T>): OneToManyRegister<T> {
-        return OneToManyRegisterBuilder(clazz, helper)
+    fun <T : Any> with(clazz: Class<T>): RegisterBuilder<T> {
+        return RegisterBuilder(clazz, this)
     }
 }
