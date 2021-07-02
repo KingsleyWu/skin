@@ -1,45 +1,46 @@
 package com.kingsley.simple
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.kingsley.skin.SkinFactory2
+import com.kingsley.simple.databinding.ActivityMainBinding
 import com.kingsley.skin.SkinManager
 import com.kingsley.skin.util.L
-import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseSkinActivity() {
+
+    private val TAG = "MainActivity"
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-
-        tv_hello.setOnClickListener {
-            if (!it.isSelected) {
-                it.isSelected = true
-                SkinManager.applySkinName(
-                    "dark",
-                    changeCallback = object : SkinManager.ILoaderListener {
-                        override fun onSuccess() {
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                                window.statusBarColor = Color.GREEN
-                            }
-                        }
-                    })
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            val currentSkinName = SkinManager.currentSkinName()
+            if (currentSkinName == "dark") {
+                window.statusBarColor = Color.GREEN
             } else {
-                it.isSelected = false
-                SkinManager.restoreDefaultTheme(changeCallback = object :
-                    SkinManager.ILoaderListener {
-                    override fun onSuccess() {
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                            window.statusBarColor = Color.RED
-                        }
-                    }
-                })
+                window.statusBarColor = Color.RED
             }
         }
-        L.d(SkinFactory2.TAG,"onCreateView LineStyle : ${R.style.LineStyle}")
-        L.d(SkinFactory2.TAG,"onCreateView LineStyle 2 : ${R.color.main_background}")
+
+        binding.tvHello.setOnClickListener {
+            startActivity(Intent(this, SecActivity::class.java))
+        }
+        L.d(TAG,"onCreateView LineStyle : ${R.style.LineStyle}")
+        L.d(TAG,"onCreateView LineStyle 2 : ${R.color.main_background}")
+    }
+
+    override fun onSkinChanged(){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            val currentSkinName = SkinManager.currentSkinName()
+            if (currentSkinName == "dark") {
+                window.statusBarColor = Color.GREEN
+            } else {
+                window.statusBarColor = Color.RED
+            }
+        }
     }
 }

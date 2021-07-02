@@ -1,9 +1,10 @@
 package com.kingsley.skin.util
 
-import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
+import java.util.concurrent.*
 
+val pool: ExecutorService = ThreadPoolExecutor(1, 5, 10, TimeUnit.SECONDS, ArrayBlockingQueue(6) )
 
 /**
  * 执行一个异步操作
@@ -19,20 +20,13 @@ fun <ResultType> async(
     doBackground: () -> ResultType?,
     postExecute: ((result: ResultType?) -> Unit)? = null
 ) {
-    (object : AsyncTask<Unit, Unit, ResultType>() {
-        override fun onPreExecute() {
-            preExecute?.invoke()
-        }
-
-        override fun doInBackground(vararg params: Unit?): ResultType? {
-            return doBackground.invoke()
-        }
-
-        override fun onPostExecute(result: ResultType) {
+    preExecute?.invoke()
+    pool.execute{
+        val result = doBackground.invoke()
+        runUIThread{
             postExecute?.invoke(result)
         }
-
-    }).execute()
+    }
 }
 
 /**

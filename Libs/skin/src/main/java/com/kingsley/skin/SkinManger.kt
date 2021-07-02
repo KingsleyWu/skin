@@ -8,18 +8,20 @@ import android.content.res.AssetManager
 import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.SkinAppCompatDelegateImpl
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import com.kingsley.skin.listener.ILoaderListener
 import com.kingsley.skin.util.L
 import com.kingsley.skin.util.SkinSpUtils
 import com.kingsley.skin.util.async
 import com.kingsley.skin.util.runUIThread
 import java.io.File
-import java.lang.reflect.Field
 
 /**
  * 皮肤管理器
@@ -157,57 +159,55 @@ object SkinManager {
 
         val activitySkinChange = mSkins[activity] ?: return
 
-        val inflaterFactory = activitySkinChange.mSkinFactory2
-        val skinItems = inflaterFactory.mSkinItems
+        val skinItems = activitySkinChange.skinAppCompatDelegateImpl?.mSkinItems
+        skinItems?.let {
+            if (!skinItems.keys.contains(view)) {
+                skinItems[view] = SkinElement(view)
+            }
+            val attrs = skinItems[view]?.attrs
 
-        if (!skinItems.keys.contains(view)) {
-            skinItems[view] = SkinElement(view)
+            val entryName = activity.resources.getResourceEntryName(value)
+            val typeName = activity.resources.getResourceTypeName(value)
+
+            val skinElementAttr = SkinElementAttrFactory.createSkinAttr(
+                attrName, value, entryName, typeName
+            ) ?: return
+
+            attrs?.add(skinElementAttr)
+
+            // 初始加进来的时候需要重新设置一下
+            skinElementAttr.initApply(view)
         }
 
-        val attrs = skinItems[view]?.attrs
-
-        val entryName = activity.resources.getResourceEntryName(value)
-        val typeName = activity.resources.getResourceTypeName(value)
-
-        val skinElementAttr = SkinElementAttrFactory.createSkinAttr(
-            attrName, value, entryName, typeName
-        ) ?: return
-
-        attrs?.add(skinElementAttr)
-
-        // 初始加进来的时候需要重新设置一下
-        skinElementAttr.initApply(view)
     }
 
     /**
      * 该对象用来收集Activity里带有支持换肤属性的组件
      */
     private class ActivitySkinChange(activity: Activity) : SkinAble {
-        val mSkinFactory2 = SkinFactory2()
+        var mNeedOnResumedUpdate = false
+        var isVisibleToUser = true
 
-        init {
-            mSkinFactory2.mFactory2 = activity.layoutInflater.factory2
-            mSkinFactory2.mFactory = activity.layoutInflater.factory
-            // 给ActivityLayoutInflater设置一个Factory来拦截所有的View创建
-            setLayoutInflaterFactory(activity.layoutInflater)
-            activity.layoutInflater.factory2 = mSkinFactory2
-            setLayoutInflaterFactory(activity.layoutInflater)
-            activity.layoutInflater.factory = mSkinFactory2
-            L.d(TAG, "activity.layoutInflater.factory2 ${activity.layoutInflater.factory2} mSkinFactory2.mFactory ${mSkinFactory2.mFactory} mSkinFactory2.mFactory2 ${mSkinFactory2.mFactory2} ")
+        val skinAppCompatDelegateImpl: SkinAppCompatDelegateImpl? by lazy {
+            if (activity is AppCompatActivity && activity.delegate is SkinAppCompatDelegateImpl) {
+                return@lazy activity.delegate as SkinAppCompatDelegateImpl
+            }
+            return@lazy null
         }
 
-        fun setLayoutInflaterFactory(original: LayoutInflater) {
-            try {
-                val mFactorySet: Field = LayoutInflater::class.java.getDeclaredField("mFactorySet")
-                mFactorySet.isAccessible = true
-                mFactorySet.set(original, false)
-            } catch (e: Exception) {
-                e.printStackTrace()
+        fun updateSkinIfNeeded() {
+            if (mNeedOnResumedUpdate && isVisibleToUser) {
+                mNeedOnResumedUpdate = false
+                onChange()
             }
         }
 
         override fun onChange() {
-            mSkinFactory2.applySkin()
+            if (isVisibleToUser) {
+                skinAppCompatDelegateImpl?.applySkin()
+            } else {
+                mNeedOnResumedUpdate = true
+            }
         }
     }
 
@@ -219,16 +219,19 @@ object SkinManager {
             Application.ActivityLifecycleCallbacks {
 
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                //
-                mSkins[activity] = ActivitySkinChange(activity)
+                println("onActivityCreated")
+                mSkins[activity] = ActivitySkinChange(activity).apply {
+                    isVisibleToUser = true
+                }
             }
 
-            override fun onActivityDestroyed(activity: Activity) {
-                mSkins[activity]?.mSkinFactory2?.clean()
-                mSkins.remove(activity)
+            override fun onActivityResumed(activity: Activity) {
+                mSkins[activity]?.isVisibleToUser = true
+                mSkins[activity]?.updateSkinIfNeeded()
             }
 
             override fun onActivityPaused(activity: Activity) {
+                mSkins[activity]?.isVisibleToUser = false
             }
 
             override fun onActivityStarted(activity: Activity) {
@@ -240,9 +243,11 @@ object SkinManager {
             override fun onActivityStopped(activity: Activity) {
             }
 
-            override fun onActivityResumed(activity: Activity) {
+            override fun onActivityDestroyed(activity: Activity) {
+                mSkins[activity]?.skinAppCompatDelegateImpl?.clean()
+                SkinAppCompatDelegateImpl.remove(activity)
+                mSkins.remove(activity)
             }
-
         })
     }
 
@@ -284,6 +289,8 @@ object SkinManager {
             addAssetPathMethod.invoke(skinAssetManager, skinPkgPath)
 
             val resources: Resources = context.resources
+
+            @Suppress("DEPRECATION")
             val skinResource = Resources(
                 skinAssetManager,
                 resources.displayMetrics,
@@ -313,7 +320,6 @@ object SkinManager {
      * @param changeCallback 回调
      */
     fun applySkin(skinPkgPath: String?, changeCallback: ILoaderListener? = null) {
-
         // 未初始化皮肤组件
         if (!isInit) {
             throw RuntimeException("You should init SkinManager by call init() method.")
@@ -482,7 +488,12 @@ object SkinManager {
     fun getColor(context: Context, id: Int): Int {
         return try {
             if (isPathLoader) {
-                skinResourcesProxy.getColor(id)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    skinResourcesProxy.getColor(id, context.theme)
+                } else {
+                    @Suppress("DEPRECATION")
+                    skinResourcesProxy.getColor(id)
+                }
             } else {
                 mSkinSuffixResources.getColor(mApplication, id)
             }
@@ -500,7 +511,12 @@ object SkinManager {
     fun getColorStateList(context: Context, id: Int): ColorStateList {
         return try {
             if (isPathLoader) {
-                skinResourcesProxy.getColorStateList(id)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    skinResourcesProxy.getColorStateList(id, context.theme)
+                } else {
+                    @Suppress("DEPRECATION")
+                    skinResourcesProxy.getColorStateList(id)
+                }
             } else {
                 mSkinSuffixResources.getColorStateList(mApplication, id)
             }
@@ -536,7 +552,12 @@ object SkinManager {
     fun getDrawable(context: Context, id: Int): Drawable? {
         return try {
             if (isPathLoader) {
-                skinResourcesProxy.getDrawable(id)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    skinResourcesProxy.getDrawable(id, context.theme)
+                } else {
+                    @Suppress("DEPRECATION")
+                    skinResourcesProxy.getDrawable(id)
+                }
             } else {
                 mSkinSuffixResources.getDrawable(mApplication, id)
             }
@@ -550,11 +571,5 @@ object SkinManager {
         mSkins.forEach {
             it.value.onChange()
         }
-    }
-
-    interface ILoaderListener {
-        fun onStart() {}
-        fun onSuccess() {}
-        fun onFailed(reason: String?) {}
     }
 }

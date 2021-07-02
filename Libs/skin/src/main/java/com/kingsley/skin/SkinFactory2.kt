@@ -143,8 +143,8 @@ class SkinFactory2 : LayoutInflater.Factory2 {
                 constructor = clazz.getConstructor(*sConstructorSignature)
                 sConstructorMap[name] = constructor
             }
-            constructor.isAccessible = true
-            val view = constructor.newInstance(context, attrs)
+            constructor?.isAccessible = true
+            val view = constructor?.newInstance(context, attrs)
             return view
         } catch (e: Exception) {
             L.e(TAG, "cannot create 【$name】 : ", e)
@@ -174,7 +174,7 @@ class SkinFactory2 : LayoutInflater.Factory2 {
                         val entryName = context.resources.getResourceEntryName(id)
                         val typeName = context.resources.getResourceTypeName(id)
                         val attrName = SkinElementAttrFactory.getStyleAttrName(index)
-                        attrName?.let { attrName ->
+                        attrName?.let {
                             val skinAttr =
                                 SkinElementAttrFactory.createSkinAttr(
                                     attrName,

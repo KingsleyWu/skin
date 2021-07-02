@@ -19,10 +19,9 @@ abstract class BaseFragment : Fragment(), IBaseView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mActivity = activity
-        val fm = parentFragmentManager
         if (savedInstanceState != null) {
             val isSupportHidden = savedInstanceState.getBoolean(stateSaveIsHidden)
-            val ft: FragmentTransaction = fm.beginTransaction()
+            val ft: FragmentTransaction = parentFragmentManager.beginTransaction()
             if (isSupportHidden) {
                 ft.hide(this)
             } else {

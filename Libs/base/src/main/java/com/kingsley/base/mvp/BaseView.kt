@@ -22,8 +22,8 @@ abstract class BaseView {
     }
 
     @Suppress("UNCHECKED_CAST")
-    open fun <T : Fragment?> getFragment(): T {
-        return mFragment as T
+    open fun <T : Fragment?> getFragment(): T? {
+        return mFragment as? T?
     }
 
     abstract fun onDestroyView()

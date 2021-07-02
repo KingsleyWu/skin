@@ -65,11 +65,13 @@ class SkinSuffixResources(resources: Resources) {
         if (!isDefaultSkin) {
             val targetResId = getTargetResId(context, resId)
             if (targetResId != 0) {
+                @Suppress("DEPRECATION")
                 return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     mResources.getColor(targetResId, context.theme)
                 } else mResources.getColor(targetResId)
             }
         }
+        @Suppress("DEPRECATION")
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             context.resources.getColor(resId, context.theme)
         } else context.resources.getColor(resId)
@@ -81,11 +83,13 @@ class SkinSuffixResources(resources: Resources) {
         if (!isDefaultSkin) {
             val targetResId = getTargetResId(context, resId)
             if (targetResId != 0) {
+                @Suppress("DEPRECATION")
                 return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     mResources.getColorStateList(targetResId, context.theme)
                 } else mResources.getColorStateList(targetResId)
             }
         }
+        @Suppress("DEPRECATION")
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             context.resources.getColorStateList(resId, context.theme)
         } else context.resources.getColorStateList(resId)
@@ -96,11 +100,13 @@ class SkinSuffixResources(resources: Resources) {
         if (!isDefaultSkin) {
             val targetResId = getTargetResId(context, resId)
             if (targetResId != 0) {
-                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                @Suppress("DEPRECATION")
+                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     mResources.getDrawable(targetResId, context.theme)
                 } else mResources.getDrawable(targetResId)
             }
         }
+        @Suppress("DEPRECATION")
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             context.resources.getDrawable(resId, context.theme)
         } else context.resources.getDrawable(resId)

@@ -5,8 +5,10 @@ import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.Log
 import android.util.TypedValue
+import androidx.annotation.RequiresApi
 
 /**
  * 皮肤资源加载器
@@ -14,6 +16,7 @@ import android.util.TypedValue
  * 拦截Resource读取资源的方法，先
  *
  */
+@Suppress("DEPRECATION")
 class SkinResourcesProxy(resources: Resources) : Resources(resources.assets, resources.displayMetrics, resources.configuration) {
 
     companion object {
@@ -32,7 +35,6 @@ class SkinResourcesProxy(resources: Resources) : Resources(resources.assets, res
         get() {
             return SkinManager.skinPackageName
         }
-
 
     /**
      * 根据资源ID，在皮肤包里加载一次
@@ -220,7 +222,8 @@ class SkinResourcesProxy(resources: Resources) : Resources(resources.assets, res
         return value
     }
 
-    override fun getDrawable(id: Int,  theme: Theme?): Drawable? {
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    override fun getDrawable(id: Int, theme: Theme?): Drawable? {
 
         Log.d(TAG, "getDrawable:$id, theme:$theme")
 
@@ -286,7 +289,8 @@ class SkinResourcesProxy(resources: Resources) : Resources(resources.assets, res
         return value
     }
 
-    override fun getColor(id: Int,  theme: Resources.Theme?): Int {
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun getColor(id: Int, theme: Resources.Theme?): Int {
         var value = super.getColor(id, theme)
         val idInSkin  = getResourceIdInSkin(id)
         if (idInSkin != 0) {
@@ -313,7 +317,8 @@ class SkinResourcesProxy(resources: Resources) : Resources(resources.assets, res
         return value
     }
 
-    override fun getColorStateList(id: Int,  theme: Resources.Theme?): ColorStateList {
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun getColorStateList(id: Int, theme: Resources.Theme?): ColorStateList {
         var value = super.getColorStateList(id, theme)
         val idInSkin  = getResourceIdInSkin(id)
         if (idInSkin != 0) {
