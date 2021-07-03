@@ -2,15 +2,13 @@ package androidx.appcompat.app
 
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.LayoutInflaterCompat
@@ -131,12 +129,9 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
         context: Context,
         attrs: AttributeSet
     ): View? {
-
         // 先收集属性，看是否有换肤支持的属性
         val skinAttrs = parseSkinAttr(context, attrs)
-        println("createView 1111 = $parent name = $name ")
         var createView = appCompatDelegateImpl.createView(parent, name, context, attrs)
-        println("createView 2222 = $createView")
         if (createView == null) {
             if (-1 == name.indexOf('.')) {
                 // 系统自带的widget
@@ -153,7 +148,6 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
                 // 自定義的 View
                 createView = createView(context, name, null, attrs)
             }
-            //createView = mSkinLayoutInflater.onCreateView(context, parent, name, attrs)
             println("createView 3333 = $createView")
         }
         // 看是否有换肤支持的属性，如果没有，则不拦截
@@ -167,7 +161,11 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             LayoutInflater.from(context)?.createView(context, name, prefix, attrs)
         } else {
-            LayoutInflater.from(context)?.createView(name, prefix, attrs)
+            if (name == "ViewStub" && context is ContextWrapper) {
+                LayoutInflater.from(context.baseContext)?.createView(name, prefix, attrs)
+            } else {
+                LayoutInflater.from(context)?.createView(name, prefix, attrs)
+            }
         }
     }
 

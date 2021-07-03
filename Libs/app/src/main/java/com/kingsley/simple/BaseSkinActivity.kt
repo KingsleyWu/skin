@@ -11,6 +11,8 @@ import com.kingsley.skin.listener.OnSkinChangedListener
  */
 open class BaseSkinActivity: AppCompatActivity(), OnSkinChangedListener {
 
-    override fun getDelegate() = SkinAppCompatDelegateImpl[this, super.getDelegate()]
+    override fun getDelegate() = SkinAppCompatDelegateImpl[this,
+            super.getDelegate()
+    ]
 
 }

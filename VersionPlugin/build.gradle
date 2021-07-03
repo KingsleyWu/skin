@@ -7,17 +7,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.20"
     }
 
-    // 去除依赖冲突
-    subprojects {
-        project.configurations.all {
-            resolutionStrategy.eachDependency { details ->
-                println("sssssssssss ===== " + details.requested)
-                if (details.requested.group == 'org.jetbrains.kotlin') {
-                    details.useVersion "1.5.20"
-                }
-            }
-        }
-    }
 }
 
 apply plugin: 'kotlin'
@@ -30,6 +19,7 @@ repositories {
 
 dependencies {
     implementation gradleApi()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20"
 }
 
 compileKotlin {
