@@ -17,7 +17,7 @@ data class SkinElement(
     /**
      * 当前View上需要修改的属性
      */
-    var attrs: ArrayList<SkinElementAttr> = ArrayList()
+    var attrs: MutableList<SkinElementAttr> = mutableListOf()
 ) {
 
     internal fun initApply() {

@@ -5,7 +5,7 @@ package com.kingsley.plugin
  */
 
 object Versions {
-    const val kotlin = "1.5.20"
+    const val kotlin = "1.5.21"
     const val kotlinxCoroutines = "1.3.9"
     const val coreKtx = "1.3.1"
     const val multidex = "2.0.1"
@@ -23,7 +23,7 @@ object Versions {
     const val appStartup = "1.0.0-alpha01"
     const val paging = "3.0.0-alpha01"
 
-    const val appcompat = "1.2.0"
+    const val appcompat = "1.3.1"
     const val constraint= "2.0.4"
     const val cardView = "1.0.0"
     const val recyclerview = "1.1.0"
@@ -116,9 +116,11 @@ object Fragment {
 object Kt {
     val stdlibJdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
     val stdlibJdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
+    val kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}"
     val test = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}"
     val plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     val kotlinxCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}"
+    val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlin}"
 }
 
 object Koin {
@@ -180,31 +182,32 @@ object Leakcanary {
 
 object Dep{
     // core
-    const val coreKtx = "androidx.core:core-ktx:1.5.0"
+    const val coreKtx = "androidx.core:core-ktx:1.6.0"
     // activity
-    const val activityKtx = "androidx.activity:activity-ktx:1.2.3"
+    const val activityKtx = "androidx.activity:activity-ktx:1.2.4"
     // Fragment
-    const val fragmentKtx = "androidx.fragment:fragment-ktx:1.3.5"
+    const val fragmentKtx = "androidx.fragment:fragment-ktx:1.4.0"
     // Collection
     const val collectionKtx = "androidx.collection:collection-ktx:1.5.0"
     const val dynamicAnimationKtx = "androidx.dynamicanimation:dynamicanimation-ktx:1.0.0"
 
     // lifecycle
-    const val lifecycleLivedataCoreKtx = "androidx.lifecycle:lifecycle-livedata-core-ktx:2.4.0-alpha02"
-    const val lifecycleLivedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0-alpha02"
-    const val lifecycleReactivestreamsKtx = "androidx.lifecycle:lifecycle-reactivestreams-ktx:2.4.0-alpha02"
-    const val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0-alpha02"
-    const val lifecycleViewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0-alpha02"
+    const val lifecycleLivedataCoreKtx = "androidx.lifecycle:lifecycle-livedata-core-ktx:2.4.0"
+    const val lifecycleLivedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0"
+    const val lifecycleReactivestreamsKtx = "androidx.lifecycle:lifecycle-reactivestreams-ktx:2.4.0"
+    const val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
+    const val lifecycleViewModelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
 
     // navigation
-    const val navigationRuntimeKtx = "androidx.navigation:navigation-runtime-ktx:2.3.5"
-    const val navigationFragmentKtx = "androidx.navigation:navigation-fragment-ktx:2.3.5"
-    const val navigationUiKtx = "androidx.navigation:navigation-ui-ktx:2.3.5"
+    const val navigationRuntimeKtx = "androidx.navigation:navigation-runtime-ktx:2.4.0"
+    const val navigationFragmentKtx = "androidx.navigation:navigation-fragment-ktx:2.4.0"
+    const val navigationUiKtx = "androidx.navigation:navigation-ui-ktx:2.4.0"
 
     // paging
-    const val pagingCommonKtx = "androidx.paging:paging-common-ktx:2.1.2"
-    const val pagingRuntimeKtx = "androidx.paging:paging-runtime-ktx:2.1.2"
-    const val pagingRxjava2Ktx = "androidx.paging:paging-rxjava2-ktx:2.1.2"
+    const val pagingCommonKtx = "androidx.paging:paging-common-ktx:3.0.0"
+    const val pagingRuntimeKtx = "androidx.paging:paging-runtime-ktx:3.0.0"
+    const val pagingRxjava2Ktx = "androidx.paging:paging-rxjava2-ktx:3.0.0"
+    const val pagingRxjava3Ktx = "androidx.paging:paging-rxjava3-ktx:3.0.0"
 
     // palette
     const val paletteKtx = "androidx.palette:palette-ktx:1.0.0"
@@ -216,10 +219,10 @@ object Dep{
     const val roomKtx = "androidx.room:room-ktx:2.3.0"
 
     // slice.builders
-    const val sliceBuildersKtx = "androidx.slice:slice-builders-ktx:1.0.0-alpha08"
+    const val sliceBuildersKtx = "androidx.slice:slice-builders-ktx:1.1.0"
 
     // sqlite
-    const val sqliteKtx = "androidx.sqlite:sqlite-ktx:2.1.0"
+    const val sqliteKtx = "androidx.sqlite:sqlite-ktx:2.2.0"
 
     // work-runtime
     const val workRuntimeKtx = "androidx.work:work-runtime-ktx:2.5.0"
@@ -229,9 +232,9 @@ object Dep{
     const val annotationExperimental = "androidx.annotation:annotation-experimental:1.1.0"
 
     // Appcompat
-    const val appcompat = "androidx.appcompat:appcompat:1.3.0"
+    const val appcompat = "androidx.appcompat:appcompat:1.3.1"
     // For loading and tinting drawables on older versions of the platform
-    const val appcompatResources = "androidx.appcompat:appcompat-resources:1.3.0"
+    const val appcompatResources = "androidx.appcompat:appcompat-resources:1.3.1"
 
     // arch.core
     const val coreRuntime = "androidx.arch.core:core-runtime:2:1.0"

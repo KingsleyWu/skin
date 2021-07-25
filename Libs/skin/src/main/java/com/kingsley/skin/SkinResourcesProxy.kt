@@ -58,7 +58,7 @@ class SkinResourcesProxy(resources: Resources) : Resources(resources.assets, res
                 Log.i(TAG, "getResourceIdInSkin type:$type, name:$entryName, packageName:$packageName, idInSkin:$idInSkin")
 
                 // 返回资源ID
-                idInSkin
+                return idInSkin
             } catch (e: Exception) {
                 0
             }

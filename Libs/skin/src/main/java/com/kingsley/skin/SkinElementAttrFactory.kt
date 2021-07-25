@@ -10,7 +10,7 @@ object SkinElementAttrFactory {
 
     private val supportSkinAttrs: MutableMap<String, Class<out SkinElementAttr>> = mutableMapOf()
 
-    private val mSkinStyle: MutableMap<Int, String> = mutableMapOf()
+    private val skinStyle: MutableMap<Int, String> = mutableMapOf()
 
     /**
      * 添加一个换肤
@@ -32,7 +32,7 @@ object SkinElementAttrFactory {
      *
      */
     fun registerSkinStyle(attrName: String, attr: Int) : SkinElementAttrFactory{
-        mSkinStyle[attr] = attrName
+        skinStyle[attr] = attrName
         return this
     }
 
@@ -132,15 +132,15 @@ object SkinElementAttrFactory {
     }
 
     fun isSupportedAttr(attr: Int): Boolean {
-        return mSkinStyle.keys.contains(attr)
+        return skinStyle.keys.contains(attr)
     }
 
     fun getSkinStyle(): IntArray{
-        return mSkinStyle.keys.toIntArray()
+        return skinStyle.keys.toIntArray()
     }
 
     fun getStyleAttrName(index: Int): String?{
-        return mSkinStyle[getSkinStyle()[index]]
+        return skinStyle[getSkinStyle()[index]]
     }
 
 }

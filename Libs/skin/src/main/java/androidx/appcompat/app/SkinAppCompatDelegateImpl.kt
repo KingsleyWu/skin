@@ -25,14 +25,16 @@ import java.util.*
  * @author Kingsley
  * Created on 2021/7/1.
  */
-class SkinAppCompatDelegateImpl private constructor(val context: Context,
+class SkinAppCompatDelegateImpl private constructor(
+    val context: Context,
     private val appCompatDelegateImpl: AppCompatDelegate
-) : AppCompatDelegate(), LayoutInflater.Factory2  {
+) : AppCompatDelegate(), LayoutInflater.Factory2 {
+    private val tag = "SkinAppCompatDelegateIm"
 
     /**
      * Store the view item that need skin changing in the activity
      */
-    internal val mSkinItems: MutableMap<View, SkinElement> = mutableMapOf()
+    internal val skinItems = mutableMapOf<View, SkinElement>()
 
     override fun getSupportActionBar() = appCompatDelegateImpl.supportActionBar
 
@@ -114,13 +116,13 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
     }
 
     override fun installViewFactory() {
-        println("createView installViewFactory")
+        L.d(tag, "createView installViewFactory")
         val layoutInflater = LayoutInflater.from(context)
-        println("createView installViewFactory layoutInflater = $layoutInflater")
+        L.d(tag, "createView installViewFactory layoutInflater = $layoutInflater")
         if (layoutInflater.factory == null) {
             LayoutInflaterCompat.setFactory2(layoutInflater, this)
         }
-        println("createView installViewFactory layoutInflater2 = ${LayoutInflater.from(context)}")
+        L.d(tag, "createView installViewFactory layoutInflater2 = ${LayoutInflater.from(context)}")
     }
 
     override fun createView(
@@ -148,16 +150,21 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
                 // 自定義的 View
                 createView = createView(context, name, null, attrs)
             }
-            println("createView 3333 = $createView")
+            L.d(tag, "createView 3333 = $createView")
         }
         // 看是否有换肤支持的属性，如果没有，则不拦截
         if (createView != null && skinAttrs.isNotEmpty()) {
-            createView.let { mSkinItems[it] = SkinElement(it, skinAttrs).apply { initApply() } }
+            createView.let { skinItems[it] = SkinElement(it, skinAttrs).apply { initApply() } }
         }
         return createView
     }
 
-    private fun createView(context: Context, name: String, prefix: String?, attrs: AttributeSet): View? {
+    private fun createView(
+        context: Context,
+        name: String,
+        prefix: String?,
+        attrs: AttributeSet
+    ): View? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             LayoutInflater.from(context)?.createView(context, name, prefix, attrs)
         } else {
@@ -174,7 +181,7 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
     }
 
     override fun isHandleNativeActionModesEnabled(): Boolean {
-       return appCompatDelegateImpl.isHandleNativeActionModesEnabled
+        return appCompatDelegateImpl.isHandleNativeActionModesEnabled
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -199,22 +206,22 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
     }
 
     override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
-       return createView(null, name, context, attrs)
+        return createView(null, name, context, attrs)
     }
 
     /**
      * 收集属性是否有换肤支持的属性
      */
-    private fun parseSkinAttr(context: Context, attrs: AttributeSet): ArrayList<SkinElementAttr> {
-        val viewAttrs: ArrayList<SkinElementAttr> = ArrayList()
-        L.d(TAG, "onCreateView : ${attrs.styleAttribute}")
+    private fun parseSkinAttr(context: Context, attrs: AttributeSet): MutableList<SkinElementAttr> {
+        val viewAttrs = mutableListOf<SkinElementAttr>()
+        L.d(tag, "onCreateView : ${attrs.styleAttribute}")
         if (attrs.styleAttribute != 0) {
             val typedArray = context.obtainStyledAttributes(
                 attrs.styleAttribute,
                 SkinElementAttrFactory.getSkinStyle()
             )
-            L.d(TAG, "onCreateView typedArray length : ${typedArray.length()}")
-            L.d(TAG, "onCreateView typedArray indexCount : ${typedArray.indexCount}")
+            L.d(tag, "onCreateView typedArray length : ${typedArray.length()}")
+            L.d(tag, "onCreateView typedArray indexCount : ${typedArray.indexCount}")
             for (i in 0 until typedArray.indexCount) {
                 val index = typedArray.getIndex(i)
                 val attr = typedArray.peekValue(index)
@@ -225,23 +232,19 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
                         val typeName = context.resources.getResourceTypeName(id)
                         val attrName = SkinElementAttrFactory.getStyleAttrName(index)
                         attrName?.let {
-                            val skinAttr =
-                                SkinElementAttrFactory.createSkinAttr(
-                                    attrName,
-                                    id,
-                                    entryName,
-                                    typeName
-                                )
+                            val skinAttr = SkinElementAttrFactory.createSkinAttr(
+                                attrName, id, entryName, typeName
+                            )
                             skinAttr?.let { viewAttrs.add(it) }
                         }
                     } catch (e: NumberFormatException) {
-                        L.e(TAG, " parseSkinAttr error : ", e)
+                        L.e(tag, " parseSkinAttr error : ", e)
                     } catch (e: Resources.NotFoundException) {
-                        L.e(TAG, " parseSkinAttr error : ", e)
+                        L.e(tag, " parseSkinAttr error : ", e)
                     }
-                    L.d(TAG, "onCreateView typedArray attr : ${attr?.coerceToString()} ")
-                    L.d(TAG, "onCreateView typedArray resourceId : ${attr?.resourceId}")
-                    L.d(TAG, "onCreateView typedArray index : $index")
+                    L.d(tag, "onCreateView typedArray attr : ${attr?.coerceToString()} ")
+                    L.d(tag, "onCreateView typedArray resourceId : ${attr?.resourceId}")
+                    L.d(tag, "onCreateView typedArray index : $index")
                 }
             }
             typedArray.recycle()
@@ -249,7 +252,7 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
         for (i in 0 until attrs.attributeCount) {
             val attrName = attrs.getAttributeName(i)
             val attrValue = attrs.getAttributeValue(i)
-            L.d(TAG, " parseSkinAttr attrName : $attrName  attrValue : $attrValue")
+            L.d(tag, " parseSkinAttr attrName : $attrName  attrValue : $attrValue")
             // 看属性是否是支持换肤的属性
             if (!SkinElementAttrFactory.isSupportedAttr(attrName)) {
                 continue
@@ -265,11 +268,20 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
                     val entryName = context.resources.getResourceEntryName(id)
                     val typeName = context.resources.getResourceTypeName(id)
                     val skinAttr = SkinElementAttrFactory.createSkinAttr(attrName, id, entryName, typeName)
-                    skinAttr?.let { viewAttrs.add(it) }
+                    skinAttr?.let {
+                        val each = viewAttrs.iterator()
+                        while (each.hasNext()) {
+                            // 只保留一个 skinAttr
+                            if (it.attrName == each.next().attrName) {
+                                each.remove()
+                            }
+                        }
+                        viewAttrs.add(it)
+                    }
                 } catch (e: NumberFormatException) {
-                    L.e(TAG, " parseSkinAttr error : ", e)
+                    L.e(tag, " parseSkinAttr error : ", e)
                 } catch (e: Resources.NotFoundException) {
-                    L.e(TAG, " parseSkinAttr error : ", e)
+                    L.e(tag, " parseSkinAttr error : ", e)
                 }
             }
         }
@@ -277,7 +289,7 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
     }
 
     fun applySkin() {
-        mSkinItems.forEach {
+        skinItems.forEach {
             it.value.apply()
         }
         if (context is OnSkinChangedListener) {
@@ -286,16 +298,20 @@ class SkinAppCompatDelegateImpl private constructor(val context: Context,
     }
 
     fun clean() {
-        mSkinItems.forEach {
+        skinItems.forEach {
             it.value.clean()
         }
-        mSkinItems.clear()
+        skinItems.clear()
     }
 
     companion object {
-        private val sDelegateMap: MutableMap<Activity, WeakReference<AppCompatDelegate?>?> = WeakHashMap<Activity, WeakReference<AppCompatDelegate?>?>()
+        private val sDelegateMap: MutableMap<Activity, WeakReference<AppCompatDelegate?>?> =
+            WeakHashMap<Activity, WeakReference<AppCompatDelegate?>?>()
 
-        operator fun get(activity: Activity, appCompatDelegate: AppCompatDelegate): AppCompatDelegate {
+        operator fun get(
+            activity: Activity,
+            appCompatDelegate: AppCompatDelegate
+        ): AppCompatDelegate {
             var delegate = sDelegateMap[activity]?.get()
             if (delegate == null) {
                 delegate = SkinAppCompatDelegateImpl(activity, appCompatDelegate)

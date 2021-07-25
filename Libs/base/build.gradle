@@ -39,6 +39,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Kt.stdlibJdk8
+    implementation Kt.kotlinReflect
     implementation AndroidX.appcompat
     implementation AndroidX.coreKtx
     implementation AndroidX.legacySupportV4

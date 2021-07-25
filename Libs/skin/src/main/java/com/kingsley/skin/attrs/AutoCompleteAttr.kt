@@ -1,16 +1,25 @@
 package com.kingsley.skin.attrs
 
+import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import com.kingsley.skin.SkinElementAttr
 import com.kingsley.skin.SkinManager
+import com.kingsley.skin.util.L
 
 /**
  * AppCompatAutoCompleteTextView
  *
  * android:popupBackground
  */
-class AutoCompleteAttr : SkinElementAttr() {
+class AutoCompleteAttr(
+    /**
+     * 动态设置的 popupBackground Drawable
+     */
+    var dynamicPopupBackgroundDrawable: Drawable? = null
+) : SkinElementAttr() {
 
     companion object {
         const val TAG = "AutoCompleteAttr"
@@ -24,12 +33,12 @@ class AutoCompleteAttr : SkinElementAttr() {
 
     override fun apply(view: View?) {
         super.apply(view)
-//        Log.d(TAG, "applyView:$view, this: $this")
+        L.d(TAG, "applyView:$view, this: $this")
 
         (view as? AppCompatAutoCompleteTextView)?.run {
-            when (attrName) {
-                "popupBackground" ->
-                    setDropDownBackgroundDrawable(SkinManager.getDrawable(context, attrValueRefId))
+            when  {
+                dynamicPopupBackgroundDrawable != null -> setDropDownBackgroundDrawable(dynamicPopupBackgroundDrawable)
+                attrName == "popupBackground" -> setDropDownBackgroundDrawable(SkinManager.getDrawable(context, attrValueRefId))
             }
         }
     }

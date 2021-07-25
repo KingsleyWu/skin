@@ -1,8 +1,7 @@
 package com.kingsley.skin
 
-import android.util.Log
 import android.view.View
-import com.kingsley.base.BuildConfig
+import com.kingsley.skin.util.L
 
 /**
  * 一个皮肤属性
@@ -42,8 +41,8 @@ abstract class SkinElementAttr(
      * 当皮肤改变的时候重新给View对应的属性设置皮肤包里的新值
      */
     open fun apply(view: View?) {
-        if (BuildConfig.DEBUG) {
-            Log.d("SkinElementAttr", "apply attr:$this, view:$view")
+        if (SkinConfig.DEBUG) {
+            L.d("SkinElementAttr", "apply attr:$this, view:$view")
         }
     }
 
