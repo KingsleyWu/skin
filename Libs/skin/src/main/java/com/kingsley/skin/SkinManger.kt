@@ -17,6 +17,7 @@ import androidx.appcompat.app.SkinAppCompatDelegateImpl
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.kingsley.skin.attrs.BackgroundAttr
+import com.kingsley.skin.attrs.TextColorAttr
 import com.kingsley.skin.listener.ILoaderListener
 import com.kingsley.skin.util.L
 import com.kingsley.skin.util.SkinSpUtils
@@ -157,36 +158,39 @@ object SkinManager {
         // 如果不支持，则直接退出
         if (!SkinElementAttrFactory.isSupportedAttr(attrName)) return
 
-        val activitySkinChange = mSkins[activity] ?: return
-
-        val skinItems = activitySkinChange.skinAppCompatDelegateImpl?.skinItems
-        skinItems?.let {
-            if (!skinItems.keys.contains(view)) {
-                skinItems[view] = SkinElement(view)
-            }
-            val attrs = skinItems[view]?.attrs
-
+        addDynamicSkinAttr(activity, view) {
             val entryName = activity.resources.getResourceEntryName(value)
             val typeName = activity.resources.getResourceTypeName(value)
-
-            val skinElementAttr = SkinElementAttrFactory.createSkinAttr(
-                attrName, value, entryName, typeName
-            ) ?: return
-            attrs?.let {
-                val each = it.iterator()
-                while (each.hasNext()) {
-                    // 只保留一个 skinAttr
-                    if (skinElementAttr.attrName == each.next().attrName) {
-                        each.remove()
-                    }
-                }
-                attrs.add(skinElementAttr)
-            }
-
-            // 初始加进来的时候需要重新设置一下
-            skinElementAttr.initApply(view)
+            return@addDynamicSkinAttr SkinElementAttrFactory.createSkinAttr(attrName, value, entryName, typeName)
         }
+    }
 
+    /**
+     * 当元素的属性值是通过代码设置的时候，需要手动把要换肤的元素和属性添加到皮肤框架中
+     */
+    fun addTextColorSkinAttr(activity: Activity, view: View, textColor: Int) {
+        addDynamicSkinAttr(activity, view) { TextColorAttr(textColor) }
+    }
+
+    /**
+     * 当元素的属性值是通过代码设置的时候，需要手动把要换肤的元素和属性添加到皮肤框架中
+     */
+    fun addTextColorSkinAttr(activity: Activity, view: View, textColor: ColorStateList) {
+        addDynamicSkinAttr(activity, view) { TextColorAttr(dynamicTextColorColorStateList = textColor) }
+    }
+
+    /**
+     * 当元素的属性值是通过代码设置的时候，需要手动把要换肤的元素和属性添加到皮肤框架中
+     */
+    fun addTextColorHintSkinAttr(activity: Activity, view: View, textColorHint: Int) {
+        addDynamicSkinAttr(activity, view) { TextColorAttr(dynamicTextColorHint = textColorHint ) }
+    }
+
+    /**
+     * 当元素的属性值是通过代码设置的时候，需要手动把要换肤的元素和属性添加到皮肤框架中
+     */
+    fun addTextColorHintSkinAttr(activity: Activity, view: View, textColorHint: ColorStateList) {
+        addDynamicSkinAttr(activity, view) { TextColorAttr(dynamicTextColorHintColorStateList = textColorHint) }
     }
 
     /**
@@ -206,7 +210,7 @@ object SkinManager {
     /**
      * 当元素的属性值是通过代码设置的时候，需要手动把要换肤的元素和属性添加到皮肤框架中
      */
-    fun addDynamicSkinAttr(activity: Activity, view: View, createSkinElementAttr: () -> SkinElementAttr) {
+    fun addDynamicSkinAttr(activity: Activity, view: View, createSkinElementAttr: () -> SkinElementAttr?) {
         val activitySkinChange = mSkins[activity] ?: return
 
         val skinItems = activitySkinChange.skinAppCompatDelegateImpl?.skinItems
@@ -215,20 +219,21 @@ object SkinManager {
                 skinItems[view] = SkinElement(view)
             }
             val attrs = skinItems[view]?.attrs
-
             val skinElementAttr = createSkinElementAttr.invoke()
-            attrs?.let {
-                val each = it.iterator()
-                while (each.hasNext()) {
-                    // 只保留一个 skinAttr
-                    if (skinElementAttr.attrName == each.next().attrName) {
-                        each.remove()
+            if (skinElementAttr != null) {
+                attrs?.let {
+                    val each = it.iterator()
+                    while (each.hasNext()) {
+                        // 只保留一个 skinAttr
+                        if (skinElementAttr.attrName == each.next().attrName) {
+                            each.remove()
+                        }
                     }
+                    attrs.add(skinElementAttr)
                 }
-                attrs.add(skinElementAttr)
+                // 初始加进来的时候需要重新设置一下
+                skinElementAttr.initApply(view)
             }
-            // 初始加进来的时候需要重新设置一下
-            skinElementAttr.initApply(view)
         }
     }
 
